@@ -1,0 +1,127 @@
+\setlrmarginsandblock{3cm}{2cm}{*}
+\setulmarginsandblock{3cm}{3cm}{*}
+\OnehalfSpacing
+
+\setheadfoot{\baselineskip}{0pt}
+\setheaderspaces{2cm}{*}{*}
+
+\makepagestyle{thesis}
+
+\makeevenhead{thesis}{\color{primary}\alt\bfseries\thepage}{}{\alt\leftmark}
+\makeoddhead{thesis}{\alt\rightmark}{}{\color{primary}\alt\bfseries\thepage}
+\makeheadrule{thesis}{\textwidth}{2\normalrulethickness}
+
+\pagestyle{thesis}
+
+\setlength{\beforechapskip}{0pt}
+\setlength{\afterchapskip}{1cm}
+\renewcommand{\printchapternum}{}
+\renewcommand{\printchaptername}{}
+\renewcommand{\printchaptertitle}[1]{
+    \ifnum\value{chapter} > 0
+        \begin{minipage}{3.5cm}
+            \begin{tcolorbox}[
+                sharp corners,
+                colback = primary,
+                colframe = secondary,
+                boxrule = 0pt,
+                rightrule = 0.25cm,
+                width = 3.5cm,
+                height = 2cm,
+                valign = center,
+            ]
+                \fontsize{60pt}{0pt}\color{white}\alt\bfseries\thechapter
+            \end{tcolorbox}
+        \end{minipage}\hfill
+        \raisebox{-15pt}{\huge\bfseries\alt\color{primary}#1}\\[0pt]
+    \else
+        \centering
+        \raisebox{-15pt}{\huge\bfseries\alt\color{primary}#1}\\[0pt]
+    \fi
+}
+
+\let\oldchapter\chapter
+\renewcommand{\chapter}[1]{
+    \oldchapter{#1}
+    \thispagestyle{empty}
+}
+
+\setsecheadstyle{\Large\bfseries\alt}
+\setsubsecheadstyle{\large\bfseries\alt}
+\setsubsubsecheadstyle{\bfseries\alt}
+
+\makeatletter
+\renewcommand{\@seccntformat}[1]{\textcolor{primary}{\csname the#1\endcsname}\hspace{0.5cm}}
+\makeatother
+
+\renewcommand{\cftchapterfont}{\large\bfseries\alt}
+\renewcommand{\cftchapterpagefont}{\color{primary}\large\bfseries\alt}
+
+\renewcommand{\cftsectionfont}{\alt}
+\renewcommand{\cftsectionpagefont}{\alt}
+
+\renewcommand{\cftsubsectionfont}{\alt}
+\renewcommand{\cftsubsectionpagefont}{\alt}
+
+\lstdefinestyle{style}{
+    basicstyle = \linespread{1}\small\jbm,
+    numbers = left,
+    numberstyle = \color{gray}\scriptsize\jbm,
+    xleftmargin = 25pt,
+    captionpos = b,
+    abovecaptionskip = 5pt,
+    belowcaptionskip = 0pt,
+}
+
+\newtcolorbox{code}[1]{
+    enhanced jigsaw,
+    sharp corners,
+    boxrule = 0.5mm,
+    colframe = primary,
+    halign title = center,
+    fonttitle = \color{white}\bfseries\jbm,
+    top = 0pt,
+    bottom = 0pt,
+    left = 0pt,
+    right = 0pt,
+    breakable,
+    bottomrule at break = 0pt,
+    toprule at break = 0pt,
+    opacityback = 0,
+    #1,
+}
+
+\newtcbtheorem[number within = chapter]{definition}{\hspace*{-10pt}Definizione}{
+    enhanced jigsaw,
+    opacityback = 0,
+    sharp corners,
+    separator sign = .,
+    colframe = primary,
+    boxrule = 0pt,
+    leftrule = 0.5mm,
+    fonttitle = \large\color{primary}\alt\fontseries{mid}\selectfont,
+    attach title to upper = {\par},
+    halign title = left,
+    left = 15pt,
+    right = 0pt,
+    top = 0pt,
+    bottom = 0pt,
+    breakable,
+}{def}
+
+\newtcbtheorem[number within = chapter]{theorem}{\hspace*{-10pt}Teorema}{
+    enhanced jigsaw,
+    opacityback = 0,
+    sharp corners,
+    separator sign = .,
+    colframe = primary,
+    boxrule = 0pt,
+    leftrule = 0.5mm,
+    fonttitle = \large\color{primary}\alt\fontseries{mid}\selectfont,
+    attach title to upper = {\par},
+    halign title = left,
+    left = 15pt,
+    top = 1pt,
+    bottom = 0pt,
+    breakable,
+}{thm}
