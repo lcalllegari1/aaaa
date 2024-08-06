@@ -1,7 +1,6 @@
 \chapter{Nozioni Fondamentali}
 L'obiettivo di  questo capitolo è quello di presentare i concetti di base che vengono utilizzati nel seguito di questo
 lavoro e, più in generale, nell'ambito dell'ottimizzazione matematica.
-
 \section{Introduzione}
 Nel corso della sua esistenza, l’uomo ha sempre dovuto affrontare e risolvere una grande varietà di problemi. Con il
 passare del tempo, le nostre capacità si sono evolute e gli strumenti a nostra disposizione sono migliorati,
@@ -9,7 +8,646 @@ permettendoci di gestire problemi di complessità sempre maggiore. Di conseguenz
 risolvere un problema trovando una soluzione qualsiasi, ma aspiriamo ad ottimizzare, cioè a identificare la soluzione
 migliore possibile, sulla base di criteri specifici.
 
-L'obiettivo di questo lavoro è quello di sviluppare un algoritmo risolutivo per il rilassamento
-lineare del problema del set-covering, di cui verrà data una specifica successivamente, che sia in grado di risolvere
-istanze del problema in modo efficiente. L'implementazione di tale algoritmo si basa sul metodo di Frank-Wolfe,
-anch'esso approfondito nel seguito, e l'idea è quella di operare un confronto con l'algoritmo del simplesso.
+Risolvere un problema di ottimizzazione significa assegnare valori alle variabili che lo caratterizzano, soddisfando un
+insieme di vincoli, con l'obiettivo di ottimizzare una grandezza specifica. La grandezza da ottimizzare e i vincoli da
+rispettare possono spesso essere rappresentati come funzioni delle variabili coinvolte, permettendoci di definire il
+problema utilizzando un modello matematico. La formulazione di un modello dovrebbe essere suﬀicientemente complessa da
+rappresentare accuratamente il problema cui si riferisce e, allo stesso tempo, abbastanza semplice da renderlo
+trattabile con gli strumenti risolutivi disponibili.
+
+L'ottimizzazione spesso è un processo iterativo in cui il modello di riferimento di un problema viene continuamente
+raffinato, con l'obiettivo di ottenere soluzioni sempre più accurate.
+Con gli strumenti che abbiamo a disposizione, oggi siamo in grado di risolvere in modo efficiente problemi
+caratterizzati da un elevato numero di variabili e vincoli. Tuttavia, esistono classi di problemi per i quali non si può
+calcolare una soluzione ottima in un tempo ragionevole e in questi casi si ricorre ad algoritmi euristici, con
+l'obiettivo di ottenere soluzioni accettabili in tempi contenuti.
+
+L'obiettivo di questo lavoro è quello di sviluppare un algoritmo risolutivo per il rilassamento lineare del set-covering
+che sia in grado di risolvere istanze del problema in modo efficiente. L'implementazione dell'algoritmo si basa sul
+metodo di Frank-Wolfe e l'idea è quella di operare un confronto con l'algoritmo del simplesso, relativamente ai tempi di
+esecuzione e alla qualità delle soluzioni trovate.
+
+\section{Problemi di ottimizzazione}\label{sec:opt_prob}
+Un problema di ottimizzazione \( \mathcal{P} \) può essere definito con la formulazione generale
+\begin{equation}\label{eq:opt_prob}
+    \mathcal{P}\colon\left\{
+    \begin{array}{ll}
+        \min \text{ (or } \max) & f(\vec{x}) \\
+                               & \mathcal{S} \\
+                               & \vec{x} \in \mathcal{D}
+    \end{array}\right.
+\end{equation}
+dove \( f\colon \mathcal{D} \to \mathbb{R}\), con \( \vec{x} = [x_1, \ldots, x_n]^{\tr} \in \mathcal{D} = \mathcal{D}_1
+\times \dots \times \mathcal{D}_n \) tale che \( x_j \in \mathcal{D}_j \) per ogni \( 1 \leq j \leq n \) e \(
+\mathcal{S} \) è un insieme finito di vincoli. Formalmente un vincolo è una funzione che coinvolge un sottoinsieme delle
+variabili del problema e che può assumere i valori vero o falso, corrispondenti alle condizioni di vincolo soddisfatto o
+violato, rispettivamente.
+
+Calcolare il massimo di una funzione
+\(
+    f(\vec{x})
+\)
+è equivalente a calcolare il minimo della funzione
+\(
+    -f(\vec{x})
+\). Infatti, i due valori coincidono, a meno del segno, e si ottengono nello stesso punto.
+Di conseguenza, nel seguito possiamo limitarci a studiare i problemi di minimo senza perdere di generalità. Tutte le
+considerazioni che faremo saranno valide, eventualmente con opportune modifiche, anche per i problemi di massimo.
+
+\begin{definition}{}{feasiblesol}
+    Sia \( \mathcal{P} \) un problema di ottimizzazione come in \eqref{eq:opt_prob}. Ogni \( \vec{x} \in \mathcal{D} \)
+    si dice soluzione di \( \mathcal{P} \). Una soluzione che soddisfi tutti i vincoli in \( \mathcal{S} \) si dice
+    ammissibile per \( \mathcal{P} \).
+\end{definition}
+\noindent
+Per riferirci all'insieme di tutte le soluzioni ammissibili di \( \mathcal{P} \), utilizzeremo la notazione \(
+F(\mathcal{P}) \).
+
+Il dominio \( \mathcal{D} \) fornisce una caratterizzazione immediata dei problemi di ottimizzazione. Se \( \mathcal{D}
+\) è un insieme discreto, allora il problema è detto di ottimizzazione discreta. Se invece  \( \mathcal{D} \) è un
+insieme continuo, allora il problema si dice di ottimizzazione continua. Nel caso particolare di un dominio \(
+\mathcal{D} \) che sia un insieme discreto e finito, si parla di ottimizzazione combinatoria.
+
+\begin{definition}{Soluzione ottima}{optsol}
+    Sia \( \mathcal{P} \) un problema di ottimizzazione di minimo come in \eqref{eq:opt_prob}. Una soluzione
+    ammissibile \( \vec{x^{\star}} \in F(\mathcal{P}) \) si dice ottima per \( \mathcal{P} \) se
+    \[
+        f(\vec{x^{\star}}) \leq f(\vec{x}) \quad \forall \vec{x} \in F(\mathcal{P}).
+    \]
+\end{definition}
+Un problema di ottimizzazione \( \mathcal{P} \) si dice impossibile (\textit{infeasible}) quando
+\(
+    F(\mathcal{P}) = \varnothing.
+\)
+Diciamo invece che
+\(
+    \mathcal{P}
+\)
+è illimitato (\textit{unbounded}) quando non esiste alcun limite inferiore a \( f(\vec{x}) \), per \( \vec{x} \in
+F(\mathcal{P}) \). Se esiste una soluzione \( \vec{x^{\star}} \in F(\mathcal{P}) \) ottima, allora
+diciamo che \( \mathcal{P} \) ammette ottimo finito.
+
+La funzione \( f(\vec{x}) \) è chiamata funzione obiettivo e il valore \( f(\bar{\vec{x}}) \) è tipicamente noto come
+costo associato alla soluzione \( \bar{\vec{x}} \in F(\mathcal{P}) \).
+
+Infine, un problema di ottimizzazione si dice risolto quando si trova una soluzione ottima, e si dimostra che è tale,
+oppure quando si dimostra che il problema è impossibile o illimitato.
+
+\subsection{Restrizione}
+\begin{definition}{Restrizione}{restr}
+    Sia \( \mathcal{P} \) un problema di ottimizzazione. Si definisce restrizione di \( \mathcal{P} \) un problema di
+    ottimizzazione \( \mathcal{P}' \) ottenuto da \( \mathcal{P} \) aggiungendo vincoli.
+\end{definition}
+\noindent
+Intuitivamente, aggiungere vincoli ad un problema significa ridurre lo spazio delle sue soluzioni ammissibili.
+Formalmente, se \( \mathcal{P}' \) è una restrizione di \( \mathcal{P} \), allora \( F(\mathcal{P}') \subseteq
+F(\mathcal{P}) \). Di conseguenza, se \( \bar{\vec{x}} \) è una generica soluzione ammissibile per \( \mathcal{P}' \),
+ossia \( \bar{\vec{x}} \in F(\mathcal{P}')\), allora \( \bar{\vec{x}} \) è ammissibile per \( \mathcal{P} \), cioè \(
+\bar{\vec{x}} \in F(\mathcal{P}) \). Inoltre, è facile verificare che il costo associato a \( \bar{\vec{x}} \in
+F(\mathcal{P}') \) fornisce
+un limite superiore (\textit{upper bound}) al valore ottimo di \( \mathcal{P} \), ossia
+\(
+    f(\vec{x^{\star}}) \leq f(\vec{\bar{x}}),
+\)
+dove \( \vec{x^{\star}} \in F(\mathcal{P}) \) rappresenta una soluzione ottima per \( \mathcal{P} \).
+
+Infine, poiché \( F(\mathcal{P}') \subseteq F(\mathcal{P}) \), si dimostra immediatamente che se \( \mathcal{P} \) è
+impossibile, cioè \( F(\mathcal{P}) = \varnothing \), allora anche ogni sua restrizione \( \mathcal{P}' \) è
+impossibile, ossia \( F(\mathcal{P}') = \varnothing \). Non vale il viceversa.
+
+\subsection{Rilassamento}
+\begin{definition}{Rilassamento}{rilass}
+    Sia \( \mathcal{P} \) un problema di ottimizzazione. Si definisce rilassamento di \( \mathcal{P} \) un problema di
+    ottimizzazione \( \mathcal{R} \) ottenuto da \( \mathcal{P} \) rimuovendo vincoli e/o sostituendo la funzione
+    obiettivo \( f(\vec{x}) \) di \( \mathcal{P} \) con una sua approssimazione inferiore \( g(\vec{x}) \) per ogni \(
+    \vec{x} \in F(\mathcal{P}) \). Formalmente, \( \mathcal{R} \) è un rilassamento di \( \mathcal{P} \) se
+    \begin{itemize}
+        \item \( F(\mathcal{P}) \subseteq F(\mathcal{R}) \),
+        \item \( g(\vec{x}) \leq f(\vec{x}) \quad \forall \vec{x} \in F(\mathcal{P}) \).
+    \end{itemize}
+\end{definition}
+\noindent
+Si verifica immediatamente che se \( \mathcal{R} \) è impossibile, ossia
+\(
+    F(\mathcal{R}) = \varnothing,
+\)
+allora anche \( \mathcal{P} \) è impossibile, cioè \( F(\mathcal{P}) = \varnothing \). Non vale il viceversa. Inoltre, è
+facile dimostrare che se \( \bar{\vec{x}} \in F(\mathcal{R}) \) è soluzione ottima per \( \mathcal{R} \), allora \(
+g(\bar{\vec{x}}) \) fornisce un limite inferiore (\textit{lower bound}) al valore ottimo di \( \mathcal{P} \).
+Formalmente risulta \( f(\vec{x^{\star}}) \geq g(\bar{\vec{x}}) \), dove
+\(
+    \vec{x^{\star}} \in F(\mathcal{P})
+\)
+rappresenta una soluzione ottima per
+\(
+    \mathcal{P}.
+\)
+
+Infine, se la soluzione ottima \( \vec{x^{\star}} \in F(\mathcal{R}) \) di \( \mathcal{R} \) è ammissibile per \(
+\mathcal{P} \), con \( g(\vec{x^{\star}}) = f(\vec{x^{\star}}) \), allora \( \vec{x^{\star}} \) è soluzione ottima per
+\( \mathcal{P} \).
+
+\subsection{Ricerca}
+Dato un problema di ottimizzazione \( \mathcal{P} \), la ricerca è il processo che consiste nel risolvere una sequenza
+finita
+\(
+    \mathcal{P}_1, \ldots, \mathcal{P}_m
+\)
+di restrizioni di \( \mathcal{P} \). L'idea alla base della ricerca è quella di aggiungere vincoli al problema di
+partenza per ottenere delle restrizioni che siano più semplici da risolvere. Le soluzioni delle restrizioni possono poi
+essere utilizzate come informazioni aggiuntive nel processo di risoluzione di \( \mathcal{P} \).
+
+\begin{definition}{Ricerca esaustiva}{search}
+    Siano \( \mathcal{P} \) un problema di ottimizzazione e \( \mathcal{P}_1, \ldots, \mathcal{P}_m \) una sequenza di
+    sue restrizioni. Si definisce ricerca esaustiva il processo di ricerca che esplora tutto lo spazio delle soluzioni
+    ammissibili di \( \mathcal{P} \). Formalmente, deve valere
+    \[
+        \bigcup_{i = 1}^m F(\mathcal{P}_i) = F(\mathcal{P}).
+    \]
+\end{definition}
+\noindent
+Una ricerca non esaustiva si dice euristica. Una ricerca esaustiva permette di risolvere un problema di ottimizzazione
+\( \mathcal{P} \) trovando le soluzioni di tutte le restrizioni
+\(
+    \mathcal{P}_i
+\)
+e scegliendo quella migliore.
+
+La forma più semplice di ricerca esaustiva prende il nome di \textit{generate-and-test} e consiste nel generare
+esplicitamente tutte le soluzioni \( \vec{x} \in \mathcal{D} \) di \( \mathcal{P} \), verificare quali soddisfano i
+vincoli del problema e scegliere tra queste quella migliore. Questa strategia è applicabile in pratica solo a una classe
+ristretta di problemi di ottimizzazione e in generale non è molto efficiente.
+
+Una tipologia di ricerca migliore è quella che viene chiamata \textit{tree-search} e che sfrutta una struttura ad albero
+per esplorare lo spazio delle soluzioni ammissibili di un problema. Questo tipo di ricerca è alla base di molti
+algoritmi che vengono utilizzati nella pratica per risolvere problemi di ottimizzazione. L'idea è quella di dividere
+ricorsivamente lo spazio di ricerca delle soluzioni ammissibili di \( \mathcal{P} \), creando delle restrizioni in modo
+da formare una struttura ad albero in cui i nodi foglia corrispondono a restrizioni sufficientemente facili da risolvere
+direttamente. Una ricerca di questo tipo è spesso combinata con il concetto di rilassamento e l'obiettivo è quello di
+semplificare ulteriormente la risoluzione delle restrizioni associate ai vari nodi dell'albero.
+
+Infine, è importante precisare che una ricerca esaustiva non è necessariamente l'approccio risolutivo migliore in tutte
+le situazioni. Esistono classi di problemi per cui ha poco senso provare a trovare una soluzione ottima, ad esempio
+perché esplorare per intero lo spazio delle soluzioni ammissibili richiederebbe un tempo di computazione troppo elevato.
+Di conseguenza, in queste situazioni è molto più utile utilizzare algoritmi euristici, il cui obiettivo è quello di
+fornire una soluzione accettabile in tempi ragionevoli.
+
+\section{Programmazione Lineare}
+La programmazione lineare costituisce uno dei paradigmi fondamentali nell'ambito dell'ottimizzazione, poichè si applica
+in modo naturale a molti problemi del mondo reale, che risultano quindi facili da modellare. Nel corso del tempo sono
+stati sviluppati molteplici algoritmi, con l'obiettivo di risolvere in maniera efficiente problemi di programmazione
+lineare che coinvolgono un numero elevato di variabili e vincoli.
+
+Un problema di programmazione lineare (\textit{Linear Program}, LP), è un problema di ottimizzazione in cui la funzione
+obiettivo e i vincoli sono funzioni lineari. Per un problema di programmazione lineare con \( n \) variabili e \( m \)
+vincoli si può utilizzare la formulazione generale
+
+\begin{equation}
+\mathcal{P}\colon
+\setlength{\arraycolsep}{2pt}
+\left\{\begin{array}{rrcccccc}
+\min & z\,\, &=& \multicolumn{5}{c}{c_{1}\,x_{1}+\cdots+c_{n}\,x_{n}} \\[15pt]
+     &  a_{11}\,x_{1} &+ &\cdots &+ &a_{1n}\,x_{n} &\sim &b_{1}       \\
+     & \multicolumn{1}{c}{\vdots} &&\ddots&&\vdots&& \vdots           \\
+     &  a_{m1}\,x_{1} &+ &\cdots &+ &a_{mn}\,x_{n} &\sim &b_{m}       \\[15pt]
+     & \multicolumn{7}{l}{\ell_j \le x_{j} \le u_{j} \;\;\, \forall j\colon
+     1 \le j \le n}
+\end{array}\right.\\[10pt]
+\end{equation}
+dove
+\(
+\sim \,\,\in \{ \leq, =, \geq \}, \text{ } \ell_j \in \mathbb{R} \cup \{-\infty\} \text{ e } u_j \in \mathbb{R} \cup
+\{+\infty\},
+\)
+con \( c_k \in \mathbb{R} \;\, \forall k\colon 1 \leq k \leq n \), \( a_{ij} \in \mathbb{R} \;\, \forall i,j\colon 1
+\leq i \leq m,\, 1 \leq j \leq n \) e \( b_i \in \mathbb{R}\;\, \forall i\colon 1 \leq i \leq m \). Le variabili del
+problema hanno come dominio intervalli (eventualmente illimitati) di \( \mathbb{R} \) e la funzione obiettivo può essere
+scritta nella forma compatta
+\begin{equation}
+    z = \sum_{k = 1}^n c_k\,x_k\,.
+\end{equation}
+Similmente, il generico vincolo può essere scritto come
+\begin{equation}
+    \sum_{j = 1}^n a_{ij}\, x_j \sim b_i \qquad \forall i\colon 1 \leq i \leq m.
+\end{equation}
+
+La proprietà di linearità di funzione obiettivo e vincoli permette di utilizzare la teoria dell'analisi convessa come
+base nello sviluppo di algoritmi risolutivi per problemi di programmazione lineare. In aggiunta, questa proprietà
+semplifica significativamente il processo attraverso cui è possibile ottenere formulazioni alternative, tutte
+equivalenti tra loro, relativamente ad uno stesso problema di programmazione lineare.
+
+\subsection{Formulazioni equivalenti}
+Uno stesso problema di programmazione lineare può essere espresso attraverso molteplici formulazioni differenti, tutte
+equivalenti tra loro. Inoltre, con le opportune trasformazioni, è sempre possibile passare da una formulazione
+all'altra. Per il generico problema di programmazione lineare
+\(
+    \mathcal{P}
+\)
+con \( n \) variabili e \( m \) vincoli, le due forme maggiormente utilizzate sono la forma standard e quella canonica,
+riportate di seguito.
+
+\begin{subequations}
+\hspace*{.1\textwidth}
+\begin{minipage}{.3\textwidth}
+\begin{align}\notag
+    \begin{array}{ll}
+        \,\min & \vec{c}^{\tr} \vec{x} \\
+               & \vec{A} \vec{x} = \vec{b} \\\label{eq:LPstd}
+             & \vec{x} \ge 0
+    \end{array}
+    \\[7pt] \text{Forma Standard}
+\end{align}
+\end{minipage}\hspace{.1\textwidth}
+\begin{minipage}{.3\textwidth}
+    \begin{align}\notag
+    \begin{array}{ll}
+        \,\min & \vec{c}^{\tr} \vec{x} \\
+               & \vec{A} \vec{x} \ge \vec{b} \\\label{eq:LPcanonical}
+             & \vec{x} \ge 0
+    \end{array}
+    \\[7pt] \text{Forma Canonica}
+\end{align}
+\end{minipage}
+\end{subequations}\\[10pt]
+dove \( \vec{x} \in \mathbb{R}^n \), con \( \vec{c} \in \mathbb{R}^n \), \( \vec{A} \in \mathbb{R}^{m\times n} \) e \(
+\vec{b} \in \mathbb{R}^m \). Le trasformazioni necessarie per passare da una forma all'altra consistono
+nell'introduzione di variabili ausiliarie e la convenienza nell'utilizzare una forma piuttosto che un'altra dipende
+dallo specifico contesto applicativo.
+
+\subsection{Interpretazione geometrica}
+Prima di analizzare un problema di programmazione lineare dal punto di vista geometrico è necessario introdurre alcuni
+concetti, che vengono presentati di seguito.
+
+\begin{definition}{Insieme convesso}{convset}
+    Un insieme \( \mathcal{C} \) si dice convesso se
+    \(
+        \lambda x_1 + (1 - \lambda) x_2 \in \mathcal{C} \quad \forall x_1, x_2 \in \mathcal{C}, \text{ con } \lambda
+        \in [0, 1].
+    \)
+\end{definition}
+\noindent
+La definizione può essere generalizzata per un numero finito di punti \( x_1,\ldots, x_k \) in \( \mathcal{C} \),
+utilizzando la combinazione lineare convessa
+\begin{equation}
+    \sum_{i = 1}^k \lambda_i\, x_i\,, \quad \sum_{i = 1}^k \lambda_i = 1\,.
+\end{equation}
+
+Esempi di insiemi convessi sono gli iperpiani \( \{\vec{x} \in \mathbb{R}^n \mid \vec{a}^{\tr} \vec{x} = a_0\} \) e i
+semispazi chiusi \( \{\vec{x} \in \mathbb{R}^n \mid \vec{a}^{\tr} \vec{x} \leq a_0\} \), dove \( \vec{a} \in \mathbb{R}^n
+\) e \( a_0 \in \mathbb{R} \). Si può dimostrare che l'intersezione di un numero finito di insiemi convessi è ancora un
+insieme convesso. Di conseguenza, l'intersezione di un numero finito di iperpiani e semispazi chiusi è ancora un insieme
+convesso che viene chiamato poliedro. Un poliedro limitato è chiamato politopo.
+
+Le definizioni presentate fino a questo punto ci permettono di osservare che lo spazio delle soluzioni ammissibili di un
+problema di programmazione lineare è un insieme convesso, poichè intersezione di vincoli lineari, e in particolare un
+poliedro.
+
+La definizione di un politopo come intersezione di iperpiani e semispazi chiusi è detta descrizione esterna. Esiste una
+modalità alternativa di definire un politopo, chiamata descrizione interna, che si basa sul concetto di vertice.
+
+\begin{definition}{Vertice}{vertex}
+    Si dice vertice di un poliedro un punto che non può essere espresso come combinazione lineare convessa stretta di
+    altri due punti del poliedro.
+\end{definition}
+\noindent
+Un politopo ha un numero finito di vertici e vale il teorema riportato di seguito.
+\begin{theorem}{Descrizione interna di un politopo}{intdesc}
+    Siano \( \mathcal{P} \) un politopo di \( \mathbb{R}^n \) e \( \mathcal{V} = \{\vec{x}_1, \ldots, \vec{x}_k\} \)
+    l'insieme dei suoi vertici. Allora ogni punto di \( \mathcal{P} \) può essere espresso come combinazione lineare
+    convessa dei punti in \( \mathcal{V} \,\):
+    \[
+        \vec{x} \in \mathcal{P} \iff \vec{x} = \sum_{i=1}^k \lambda_i \vec{x}_i\,,\quad  \sum_{i=1}^k \lambda_i =
+        1,\;\, \lambda_i \geq 0 \quad \forall i\colon 1 \leq i \leq k.
+    \]
+\end{theorem}
+\noindent
+La descrizione interna di un politopo è uno strumento importante perché permette di dimostrare il teorema fondamentale
+della programmazione lineare.
+
+\begin{theorem}{Teorema fondamentale della programmazione lineare}{thmLP}
+    Consideriamo il problema di programmazione lineare \( \min\{\vec{c}^{\tr}\vec{x} \mid \vec{x} \in \mathcal{P}\} \),
+    dove \( \mathcal{P} \) è il politopo che rappresenta la regione ammissibile. Allora, se il problema ammette ottimo
+    finito, esiste almeno un vertice di \( \mathcal{P} \) che è soluzione ottima.
+\end{theorem}
+\noindent
+Questo teorema ci fornisce un modo concreto per risolvere un problema di programmazione lineare, che consiste nel limitare
+la ricerca della soluzione ottima all'insieme dei vertici del politopo che definisce la regione ammissibile.
+
+Il teorema può essere esteso al caso generale di problemi di programmazione lineare in cui la regione ammissibile è un
+poliedro (con almeno un vertice), e non necessariamente un politopo. L'ipotesi sull'esistenza della soluzione ottima
+deve comunque valere, per evitare che il problema possa risultare illimitato.
+
+\subsection{Algoritmo del simplesso}
+L'algoritmo del simplesso è uno degli algoritmi maggiormente impiegati nell'ambito dell'ottimizzazione per risolvere
+problemi di programmazione lineare. \`E un algoritmo iterativo che cerca di sfruttare il teorema fondamentale della
+programmazione lineare in modo intelligente, con l'obiettivo ridurre il numero dei vertici da ispezionare per trovare la
+soluzione ottima. L'idea è quella di partire da un vertice arbitrario del poliedro che definisce la regione ammissibile
+e di muoversi ad ogni iterazione in un vertice adiacente non peggiore, relativamente al valore della funzione obiettivo.
+
+\`E importante precisare che nonostante l'algoritmo del simplesso scelga di spostarsi tra i vertici in modo
+intelligente, non c'è alcuna garanzia che il vertice corrispondente alla soluzione ottima venga trovato prima di aver
+ispezionato tutti gli altri vertici del politopo. Per questo motivo, si può dimostrare che la complessità computazionale
+al caso peggiore è esponenziale.
+
+\subsection{Dualità}\label{sec:lpduality}
+All'inizio della sezione \ref{sec:opt_prob} abbiamo argomentato che per dichiarare risolto un problema di
+ottimizzazione, non è sufficiente trovare una soluzione ottima, ma è necessario fornire una dimostrazione
+che attesti l'ottimalità di tale soluzione, relativamente al problema considerato.
+
+Per i problemi di programmazione lineare esiste un modo elegante e rigoroso per certificare l'ottimalità di una
+soluzione, che utilizza un problema di ottimizzazione di supporto chiamato problema duale. Il problema duale è ottenuto
+a partire dal problema iniziale che, in questo contesto, prende il nome di problema primale. L'idea di base è quella di
+combinare i vincoli del problema primale per costruire una limitazione al valore della sua funzione obiettivo. Questo
+concetto può essere compreso meglio attraverso un esempio di carattere generale, che viene riportato di seguito.
+
+Sia $\mathcal{P}$ un problema di programmazione lineare con $n$ variabili e
+$m$ vincoli. Senza perdita di generalità, possiamo assumere che
+$\mathcal{P}$ sia espresso nella forma standard \eqref{eq:LPstd} oppure in
+quella canonica \eqref{eq:LPcanonical}. Ad esempio, sia $\mathcal{P}$ della
+forma
+\begin{equation}\label{eq:canonicalduality}
+    \begin{array}{ll}
+        \,\min & \vec{c}^{\tr} \vec{x} \\
+               & \vec{A} \vec{x} \ge \vec{b} \\
+             & \vec{x} \ge 0
+    \end{array}\\[5pt]
+\end{equation}
+dove $\vec{x} \in \mathbb{R}^n$, con $\vec{c} \in \mathbb{R}^n,\ \vec{A} \in \mathbb{R}^{m \times n}$ e $\vec{b} \in
+\mathbb{R}^m$. Supponiamo che \( \vec{x^{\star}} \) sia la soluzione ottima candidata. Per certificare l'ottimalità
+dobbiamo dimostrare che non esistono soluzioni migliori. Nel caso di un problema di minimo, questo significa verificare
+che \( \vec{x^{\star}} \) è la soluzione di costo minimo, ossia che \( f(\vec{x^{\star}}) \leq f(\vec{x}) \) per ogni \(
+x \in F(\mathcal{P}) \).
+
+Per la generica soluzione ammissibile \( \vec{x} \in F(\mathcal{P}) \) vale \( \vec{A}\vec{x} \geq \vec{b} \). Allora,
+introducendo un vettore \( \vec{u} \in \mathbb{R}^m, \vec{u} \geq 0 \), chiamato vettore di moltiplicatori, risulta che
+\begin{equation}\label{eq:u}
+    \vec{u}^{\tr}\vec{A}\vec{x} \geq \vec{u}^{\tr}\vec{b}.
+\end{equation}
+Inoltre, possiamo costruire \( \vec{u} \) in modo che valga \( \vec{c}^{\tr} \geq \vec{u}^{\tr} \vec{A} \), da cui,
+usando la \eqref{eq:u}, si trova
+\begin{equation}\label{eq:cxuax}
+    \vec{c}^{\tr}\vec{x} \geq \vec{u}^{\tr}\vec{A}\vec{x} \geq \vec{u}^{\tr}\vec{b} \quad \forall \vec{x} \in
+    F(\mathcal{P}),
+\end{equation}
+essendo \( \vec{x} \geq 0 \). In altre parole, possiamo utilizzare \( \vec{u} \) per creare una combinazione lineare dei
+vincoli di \( \mathcal{P} \) che costituisca una limitazione inferiore al valore della funzione obiettivo. A questo
+punto, dobbiamo scegliere \( \vec{u} \) in modo da ottenere la limitazione inferiore migliore, cioè quella più alta
+possibile. In effetti, questo significa risolvere il problema di programmazione lineare
+\begin{equation}\label{eq:dual}
+    \mathcal{D}\colon\left\{
+    \begin{array}{ll}
+        \,\max & \vec{u}^{\tr} \vec{b} \\
+               & \vec{u}^{\tr}\vec{A} \le \vec{c}^{\tr} \\
+             & \vec{u} \ge 0
+    \end{array}\right. \\[7pt]
+\end{equation}
+nelle variabili \( \vec{u} = [u_1 \ldots u_m]^{\tr} \in \mathbb{R}^m \), con \( \mathcal{D} \) che prende il nome di
+problema duale di \( \mathcal{P} \).
+Con qualche modifica, il ragionamento si applica identicamente a problemi espressi nella forma standard e, in maniera del
+tutto simmetrica, può essere applicato a problemi di massimo.
+
+Le disuguaglianze \eqref{eq:u} e \eqref{eq:cxuax} hanno una conseguenza immediata, riassunta nel teorema della dualità
+debole, che viene presentato di seguito.
+
+\begin{theorem}{Dualità debole}{weakduality}
+    Siano \( \mathcal{P} \) un problema di programmazione lineare come in \eqref{eq:canonicalduality} e \( \mathcal{D}
+    \) il suo problema duale come in \eqref{eq:dual}. Allora, per le generiche soluzioni ammissibili \( \vec{x} \text{
+    e } \vec{u} \) di \( \mathcal{P} \) e \( \mathcal{D} \), rispettivamente, risulta
+    \[
+        \vec{c}^{\tr} \vec{x} \geq \vec{b}^{\tr}\vec{u}.
+    \]
+    Inoltre, se vale
+    \(
+        \vec{c}^{\tr} \vec{x} = \vec{b}^{\tr}\vec{u},
+    \)
+    allora \( \vec{x} \) e \( \vec{u} \) sono soluzioni ottime di \( \mathcal{P} \) e \( \mathcal{D} \),
+    rispettivamente.
+\end{theorem}
+\noindent
+Naturalmente, il teorema è valido simmetricamente per problemi di massimo.
+
+Infine, enunciamo il teorema della dualità forte, che fornisce un modo concreto di certificare l'ottimalità della
+soluzione di un problema di programmazione lineare.
+
+\begin{theorem}{Dualità forte}{strongduality}
+    Consideriamo una coppia primale - duale di problemi di programmazione
+    lineare. Allora, se uno dei due ammette ottimo finito, anche l'altro
+    ammette ottimo finito e il valore ottimo della funzione obiettivo è lo
+    stesso per entrambi.
+\end{theorem}
+\noindent
+Di conseguenza, per verificare l'ottimalità della soluzione \( \vec{x^{\star}} \) del problema primale \( \mathcal{P}
+\), è sufficiente determinare una soluzione ammissibile \( \vec{u^{\star}} \) del problema duale \( \mathcal{D} \), in
+modo che risulti
+\begin{equation}\label{eq:optcond}
+    \vec{c}^{\tr}\vec{x^{\star}} = \vec{b}^{\tr}\vec{u^{\star}}.
+\end{equation}
+Se una tale soluzione \( \vec{u^{\star}} \) esiste, allora \( \vec{x^{\star}} \) è ottima per \( \mathcal{P} \) e \(
+\vec{u^{\star}} \) è ottima per \( \mathcal{D} \). Al contrario, l'inesistenza di \( \vec{u^{\star}} \) ammissibile per
+\( \mathcal{D} \) che soddisfi la \eqref{eq:optcond} dimostra che \( \vec{x^{\star}} \) non è ottima per \( \mathcal{P}
+\).
+
+\subsection{Rilassamento Lagrangiano}
+\label{sec:lr}
+
+In alcune situazioni la formulazione di un problema di programmazione lineare può essere abbastanza complessa da
+impedire l'applicazione diretta di un algoritmo risolutivo. In questi casi può essere utile provare a trasformarla in
+una formulazione differente, con l'obiettivo di ottenere un problema più facile da risolvere. Alcune volte il problema
+associato alla formulazione alternativa è equivalente a quello iniziale e ha lo stesso valore ottimo. Altre volte non siamo
+così fortunati, e le due formulazioni non sono equivalenti. Di conseguenza, la formulazione alternativa non è sempre
+sufficiente per risolvere direttamente il problema di partenza, ma risulta comunque utile per ottenere delle limitazioni
+alla sua funzione obiettivo.
+
+L'intuizione alla base del rilassamento Lagrangiano è quella di semplificare un problema rimuovendo alcuni dei suoi
+vincoli e aggiungendo un contributo alla funzione obiettivo. Questo contributo, che prende il nome di penalizzazione
+Lagrangiana, è ottenuto a partire dai vincoli eliminati e serve a peggiorare il valore della funzione obiettivo per
+soluzioni che non li soddisfano.
+A questo punto possiamo formalizzare questo concetto, limitandoci ad analizzare gli aspetti fondamentali che riflettono
+gli obiettivi di questo lavoro.
+
+Sia $\mathcal{P}$ un generico problema di programmazione lineare, espresso
+nella forma canonica
+\begin{equation}
+    \begin{array}{ll}
+        \,\min & \vec{c}^{\tr} \vec{x} \\
+               & \vec{A} \vec{x} \ge \vec{b} \\
+             & \vec{x} \ge 0
+    \end{array}
+\end{equation}
+dove $\vec{x} \in \mathbb{R}^n$, con $\vec{c} \in \mathbb{R}^n,\ \vec{A}
+\in \mathbb{R}^{m \times n}$ e $\vec{b} \in \mathbb{R}^m$. Introduciamo un vettore \( \vec{u} \in \mathbb{R}^m, \vec{u}
+\geq 0\) di moltiplicatori, chiamati moltiplicatori di Lagrange, e definiamo la funzione
+\begin{equation}
+    L(\vec{x}, \vec{u}) = \vec{c}^{\tr} \vec{x} + \vec{u}^{\tr}(\vec{b} - \vec{A}\vec{x}),
+\end{equation}
+che prende il nome di funzione Lagrangiana di \( \mathcal{P} \). Questa funzione ci permette di definire la famiglia di
+problemi Lagrangiani della forma
+\begin{equation}
+    \mathcal{L}(\vec{u})\colon\bigg\{
+    \begin{array}{ll}
+        \min & \vec{c}^{\tr} \vec{x} + \vec{u}^{\tr}(\vec{b} - \vec{A}\vec{x}) = L(\vec{x}, \vec{u})\\
+             & \vec{x} \geq 0
+    \end{array}
+\end{equation}
+che sono sempre un rilassamento di \( \mathcal{P} \) e quindi forniscono un limite inferiore al valore ottimo della sua
+funzione obiettivo. Utilizzando una forma più compatta, possiamo scrivere
+\begin{equation}
+    \mathcal{L}(\vec{u}) = \min_{\vec{x} \,\geq\, 0} \,L(\vec{x}, \vec{u}) = \min_{\vec{x} \,\geq\, 0}\,\{\vec{c}^{\tr}
+    \vec{x} + \vec{u}^{\tr}(\vec{b} - \vec{A}\vec{x}) \},
+\end{equation}
+con \( \mathcal{L}(\vec{u}) \) che viene chiamata funzione duale di \( \mathcal{P} \). Per trovare la migliore
+limitazione inferiore al valore ottimo di \( \mathcal{P} \), dobbiamo risolvere all'ottimo il problema duale Lagrangiano
+\begin{equation}\label{eq:lagrangiandual}
+    \mathcal{D}\colon\bigg\{
+    \begin{array}{ll}
+        \max & \mathcal{L}(\vec{u}) \\
+             & \vec{u} \geq 0
+    \end{array}
+\end{equation}
+Infine, si può dimostrare che se \( \mathcal{P} \) ammette ottimo finito, allora il valore ottimo della sua funzione
+obiettivo coincide con il costo di una soluzione ottima del problema duale Lagrangiano \( \mathcal{D} \). Inoltre, tale
+soluzione può essere ottenuta anche con i moltiplicatori che risolvono all'ottimo il problema duale di \( \mathcal{P}
+\), definito come in \eqref{eq:dual}. Questo risultato costituisce la base teorica dell'algoritmo risolutivo che
+implementeremo nel capitolo 3.
+
+\section{Programmazione Lineare Intera}
+Il paradigma della programmazione lineare intera è un estensione della programmazione lineare che aggiunge la
+possibilità di vincolare le variabili ad assumere valori interi. Il generico problema di programmazione lineare intera
+con \( n \) variabili e \( m \) vincoli può essere definito con la formulazione generale
+\begin{equation}
+\mathcal{P}\colon
+\setlength{\arraycolsep}{2pt}
+\left\{\begin{array}{rrcccccl}
+\min & z\,\, &=\,\,& \multicolumn{5}{l}{c_{1}\,x_{1}+\cdots+c_{n}\,x_{n}} \\[15pt]
+     &  a_{11}\,x_{1} &+ &\cdots &+ &a_{1n}\,x_{n} &\sim &b_{1}       \\
+     & \multicolumn{1}{c}{\vdots} &&\ddots&&\vdots&& \vdots           \\
+     &  a_{m1}\,x_{1} &+ &\cdots &+ &a_{mn}\,x_{n} &\sim &b_{m}       \\[15pt]
+     & \multicolumn{7}{l}{\ell_j \le x_{j} \le u_{j} \;\;\, \forall j\colon 1 \le j \le n} \\[5pt]
+     & \multicolumn{7}{l}{x_j \in \mathbb{Z} \;\;\, \forall j \in J \subseteq N = \{ 1, \ldots, n \}}
+\end{array}\right.\\[10pt]
+\end{equation}
+dove
+\(
+\sim \,\,\in \{ \leq, =, \geq \}, \text{ } \ell_j \in \mathbb{R} \cup \{-\infty\} \text{ e } u_j \in \mathbb{R} \cup
+\{+\infty\},
+\)
+con \( c_k \in \mathbb{R} \;\, \forall k\colon 1 \leq k \leq n \), \( a_{ij} \in \mathbb{R} \;\, \forall i,j\colon 1
+\leq i \leq m,\, 1 \leq j \leq n \) e \( b_i \in \mathbb{R}\;\, \forall i\colon 1 \leq i \leq m \).
+Quando tutte le variabili sono vincolate ad assumere valori interi, ossia \( J = N \), il problema è detto di
+programmazione lineare intera pura. Se invece il vincolo di interezza è applicato solo ad alcune variabili, cioè \( J
+\subset N \), il problema è detto di programmazione lineare intera mista. Naturalmente quando \( J = \varnothing \) il
+problema diventa un problema di programmazione lineare.
+
+La possibilità di vincolare le variabili ad assumere valori interi permette di modellare molti più problemi del mondo
+reale di quanto non si riesca a fare con la semplice programmazione lineare. Il prezzo da pagare è una difficoltà
+maggiore nel processo risolutivo. Infatti, per un problema di programmazione lineare intera non valgono molte delle
+considerazioni che abbiamo fatto per la programmazione lineare. L'aver introdotto vincoli di interezza non
+garantisce più la convessità della regione ammissibile, e neanche le proprietà che costituiscono il fondamento per
+l'algoritmo del simplesso. Per questo motivo, nel tempo sono stati sviluppati ulteriori algoritmi, specificatamente
+ideati per gestire i vincoli di interezza e risolvere i problemi di programmazione lineare intera.
+
+\subsection{Rilassamento lineare}
+
+Nel risolvere problemi di programmazione lineare intera, è molto importante utilizzare il concetto di rilassamento. Il
+rilassamento più intuitivo e naturale per un problema di programmazione lineare intera è il rilassamento lineare. L'idea
+è quella di considerare il problema iniziale, ma senza i vincoli di interezza per le variabili che lo richiedono.
+Questa semplificazione trasforma il problema iniziale in un problema di programmazione lineare che quindi può essere
+risolto con tutti gli strumenti di cui abbiamo già discusso. L'utilità del rilassamento lineare dipende dallo specifico
+problema. In alcuni casi il rilassamento è abbastanza forte da fornire una limitazione utile per la funzione obiettivo
+del problema iniziale. Nelle situazioni in cui è invece molto debole, viene spesso combinato con i piani di taglio, con
+l'obiettivo di ottenere un rilassamento più forte, in grado di fornire una limitazione migliore. Un piano di taglio è un
+vincolo che è violato dalla soluzione ottima corrente del rilassamento lineare, ma soddisfatto dalle soluzioni
+ammissibili del problema di partenza. Geometricamente si può visualizzare proprio come un taglio all'interno della
+regione ammissibile del rilassamento, che però non interseca la regione ammissibile del problema di partenza, ottenuta
+considerando i vincoli di interezza. Questo vincolo viene aggiunto al rilassamento lineare per ottenere una limitazione
+inferiore migliore. Il processo di aggiunta di piani di taglio può essere iterato per migliorare la soluzione di un
+rilassamento lineare e ottenere una limitazione migliore al valore ottimo del problema di partenza. In effetti, questo
+è proprio il meccanismo con cui i rilassamenti lineari vengono utilizzati nell'algoritmo Branch \& Cut (B\&C),
+specificatamente ideato per risolvere problemi di programmazione lineare intera.
+
+Sebbene il rilassamento lineare sia uno strumento utile nella pratica, è fondamentale precisare che non ha alcun
+significato in relazione al problema di partenza. La possibilità di assegnare valori non interi per variabili che hanno
+il vincolo di interezza è una grande semplificazione, che però cancella la semantica di queste variabili. Ad esempio, la
+programmazione lineare intera può essere utilizzata per modellare problemi caratterizzati da decisioni sì/no, che quindi
+possono essere rappresentate da variabili binarie. In questi casi una soluzione del rilassamento lineare in cui tali
+variabili assumono valori frazionari non ha nessun significato nel contesto del problema iniziale.
+
+\section{Frank-Wolfe}
+L'algoritmo di Frank-Wolfe è un'algoritmo iterativo utilizzato per risolvere problemi di ottimizzazione. In questo
+lavoro l'algoritmo di Frank-Wolfe verrà applicato per risolvere il problema duale Lagrangiano della forma presentata in
+\eqref{eq:lagrangiandual} e, di conseguenza, le considerazioni che faremo saranno limitate a problemi di ottimizzazione
+della forma
+\begin{equation}
+    \mathcal{P}\colon \bigg\{
+    \begin{array}{ll}
+        \max & f(\vec{x}) \\
+             & \vec{x} \in \mathcal{D}
+    \end{array}
+\end{equation}
+dove \( \mathcal{D} \) è un insieme convesso e compatto e \( f\colon \mathcal{D} \to \mathbb{R} \) è una funzione
+concava, ma non necessariamente differenziabile in tutto \( \mathcal{D} \).
+
+Indicheremo con \( \vec{s}_k \) il subgradiente di \( f \) in un punto \( \vec{x}_k \in \mathcal{D} \). Naturalmente, se
+\( f \) è differenziabile in \( \vec{x}_k \), allora \( \vec{s}_k = \nabla f(\vec{x}_k) \).
+
+L'algoritmo di Frank-Wolfe si sviluppa come segue.
+
+\begin{itemize}
+    \item \text{\alt Inizializzazione}: sia \( k \gets 0 \) e \( \vec{x}_0 \in \mathcal{D} \) un punto arbitrario che
+        utilizzeremo come punto di partenza.
+
+    \item \text{\alt Passo 1}: trovare \( \vec{d} \in \mathcal{D} \) che massimizza l'approssimazione lineare di \( f
+        \) in \( \vec{x}_k \), definita dal subgradiente \( \vec{s}_k \) di \( f \) in \( \vec{x}_k \). Formalmente,
+        dobbiamo calcolare
+        \[
+            \vec{d}_k = \argmax_{\vec{d} \,\in\, \mathcal{D}} \, \{\vec{s}_k\, \vec{d}\}.
+        \]
+    \item \text{\alt Passo 2}: decidere come muoversi sul segmento che unisce i punti \(
+        \vec{x}_k \) e \( \vec{d}_k \), per determinare il punto \( \vec{x}_{k+1} \) da utilizzare nell'iterazione
+        successiva. Ad esempio, in questo lavoro useremo \( \gamma = \frac{2}{k+2} \) per calcolare
+        \[
+            \vec{x}_{k+1} = (1 - \gamma)\vec{x}_k + \gamma\vec{d}\,.
+        \]
+\end{itemize}
+Notiamo che per come è definito, il generico punto \( \vec{x}_{k+1} \) calcolato al termine dell'iterazione \( k \) è
+sempre contenuto in
+\(
+    \mathcal{D},
+\)
+poichè è ottenuto come combinazione lineare di due punti in
+\(
+    \mathcal{D},
+\)
+che è un insieme convesso.
+
+I passi dell'algoritmo di Frank-Wolfe sono riassunti nella specifica ad alto livello riportata di seguito.
+\begin{tcolorbox}[
+    enhanced jigsaw,
+    opacityback = 0pt,
+    colframe=primary, % Border color
+    colback=white, % Background color
+    boxrule=1pt,   % Border thickness
+    sharp corners, % Sharp corners
+    leftrule=0pt,
+    rightrule=0pt,
+    toprule=2pt,
+    bottomrule=2pt,
+    left=1pt,
+    top=1pt,
+    bottom=1pt,
+    adjusted title = Algoritmo di Frank-Wolfe,
+    halign title = center,
+    fonttitle = \alt\fontseries{mid}\selectfont,
+]
+\begin{algorithm}[H]
+    $ \vec{x}_0 \in \mathcal{D} $ punto di partenza \hfill {\alt {\ttfamily /*}  Inizializzazione {\ttfamily */}} \\[10pt]
+    \While{true}{\vspace*{10pt}
+        $\displaystyle \vec{d}_k = \argmax_{\vec{d} \,\in\, \mathcal{D}} \{\vec{s}_k \vec{d}\}$ \hfill {\alt
+        {\ttfamily /*}  Passo 1 {\ttfamily */}}\\[10pt]
+        $\vec{x}^{k+1} = (1 - \gamma)\vec{x}^k + \gamma \vec{d}$ with $\gamma = \frac{2}{k+2}$ \hfill {\alt {\ttfamily
+    /*}  Passo 2 {\ttfamily */}}}
+\end{algorithm}
+\end{tcolorbox}
+\noindent
+Naturalmente un'implementazione dell'algoritmo deve impostare una condizione di terminazione, che impedisca
+all'algoritmo di iterare in maniera indefinita.

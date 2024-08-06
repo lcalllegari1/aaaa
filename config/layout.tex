@@ -13,6 +13,8 @@
 
 \pagestyle{thesis}
 
+\setsecnumdepth{subsection}
+
 \setlength{\beforechapskip}{0pt}
 \setlength{\afterchapskip}{1cm}
 \renewcommand{\printchapternum}{}
@@ -63,6 +65,8 @@
 \renewcommand{\cftsubsectionfont}{\alt}
 \renewcommand{\cftsubsectionpagefont}{\alt}
 
+\setcounter{tocdepth}{2}
+
 \lstdefinestyle{style}{
     basicstyle = \linespread{1}\small\jbm,
     numbers = left,
@@ -98,6 +102,7 @@
     separator sign = .,
     colframe = primary,
     boxrule = 0pt,
+    boxsep = 0pt,
     leftrule = 0.5mm,
     fonttitle = \large\color{primary}\alt\fontseries{mid}\selectfont,
     attach title to upper = {\par},
@@ -105,7 +110,7 @@
     left = 15pt,
     right = 0pt,
     top = 0pt,
-    bottom = 0pt,
+    bottom = 1pt,
     breakable,
 }{def}
 
@@ -116,12 +121,14 @@
     separator sign = .,
     colframe = primary,
     boxrule = 0pt,
+    boxsep = 0pt,
     leftrule = 0.5mm,
     fonttitle = \large\color{primary}\alt\fontseries{mid}\selectfont,
     attach title to upper = {\par},
     halign title = left,
     left = 15pt,
+    right = 0pt,
     top = 1pt,
-    bottom = 0pt,
+    bottom = 1pt,
     breakable,
 }{thm}
