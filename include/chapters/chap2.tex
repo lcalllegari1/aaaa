@@ -1,0 +1,312 @@
+\chapter{Set-Covering}
+L'obiettivo di questo capitolo è quello di presentare il problema del set-covering e di definire il suo rilassamento
+lineare, che viene utilizzato per testare l'algoritmo implementato nel prossimo capitolo.
+
+\section{Formulazione del problema}
+Siano
+\(
+\mathcal{I} = \{1, \ldots, m\}
+\)
+un insieme e \( \mathcal{F} = \{\mathcal{F}_1,\ldots,\mathcal{F}_n\} \) una famiglia di sottoinsiemi di
+\(
+    \mathcal{I}.
+\)
+Il problema del set-covering richiede di trovare la più piccola
+collezione
+\(
+    \mathcal{F}^{\,\text{\raisebox{2pt}{$\star$}}} \!\subseteq \mathcal{F}
+\)
+tale che
+\begin{equation}\label{eq:scpconstr}
+    \bigcup_{\mathcal{F}_j \, \in \, \mathcal{F^{\,\text{\raisebox{2pt}{$\star$}}}}} \!\!\mathcal{F}_j = \mathcal{I}\,.
+\end{equation}
+In altre parole, si richiede che ciascun elemento di \( \mathcal{I} \) sia coperto da almeno uno dei sottoinsiemi in
+\(
+    \mathcal{F}^{\,\text{\raisebox{2pt}{$\star$}}}.
+\)
+Il problema può essere formulato come problema di programmazione lineare intera, introducendo, per ciascun elemento in
+\(
+    \mathcal{F},
+\)
+una variabile binaria che rappresenta l'appartenenza a
+\(
+    \mathcal{F}^{\,\text{\raisebox{2pt}{$\star$}}}.
+\)
+In particolare, definiamo
+\begin{equation}
+    x_j = \scalebox{1.05}{\bigg\{}
+    \begin{array}{@{}ll}
+        1 & \text{se } \mathcal{F}_j \in \mathcal{F}^{\,\text{\raisebox{2pt}{$\star$}}} \\
+        0 & \text{altrimenti}
+    \end{array}\qquad \forall j\colon 1 \leq j \leq n.
+\end{equation}
+A questo punto, le variabili del problema permettono di specificare la funzione obiettivo
+\begin{equation}
+    \min \;\;\sum_{j = 1}^n x_j
+\end{equation}
+che minimizza il numero dei sottoinsiemi scelti, ossia la cardinalità di
+\(
+    \mathcal{F}^{\,\text{\raisebox{2pt}{$\star$}}}.
+\)
+Infine, dobbiamo specificare la condizione \eqref{eq:scpconstr} come vincolo lineare, e quindi richiediamo che
+\begin{equation}\label{eq:dummyconstr}
+    \sum_{j\colon i \,\in\, \mathcal{F}_j} \!\!x_j \geq 1 \qquad \forall i \in \mathcal{I}.
+\end{equation}
+Combinando tutte le considerazioni fatte, otteniamo la formulazione matematica
+\begin{equation}\label{eq:defscp}
+    \begin{array}{lll}
+        \min & \displaystyle\sum_{j = 1}^n x_j \\[20pt]
+             & \!\!\!\displaystyle\sum_{j\colon i \,\in\, \mathcal{F}_j} \!\!x_j \geq 1 & \forall i \in \mathcal{I} \\[20pt]
+             & x_j \in \{0, 1\} & \forall j\colon 1 \leq j \leq n
+    \end{array}
+\end{equation}
+che descrive il problema del set-covering come problema di programmazione lineare intera. Inoltre, notiamo che
+l'espressione della funzione obiettivo stabilisce implicitamente il limite superiore per le variabili, poiché non c'è
+mai convenienza nel selezionare lo stesso elemento \( \mathcal{F}_j \in \mathcal{F}\) più di una volta. Questa
+considerazione ci permette di modificare i vincoli di dominio, richiedendo che le variabili siano semplicemente intere
+non negative.
+
+\section{Rilassamento lineare}
+
+Nel seguito di questo lavoro ci limiteremo a considerare il rilassamento lineare del set-covering, che rimuove il
+vincolo di interezza per le variabili e richiede solamente che siano non negative. Inoltre, nell'ottica di quanto
+presentato nel prossimo capitolo, è conveniente considerare una formulazione alternativa, del tutto equivalente a quella
+presentata in \eqref{eq:defscp}, ottenuta trasformando il vincolo \eqref{eq:dummyconstr} in
+\begin{equation}
+    \sum_{j=1}^n a_{ij}x_j \geq 1 \qquad \forall i \in \mathcal{I},
+\end{equation}
+dove \( a_{ij} \) è un parametro binario che assume il valore 1 se e solo se
+\(
+    i \in \mathcal{F}_j,
+\)
+per ogni elemento
+\(
+    i \in \mathcal{I} \text{, con } 1\leq j \leq n.
+\)
+
+Di conseguenza, Il rilassamento lineare del set-covering può essere definito con la formulazione
+\begin{equation}\label{eq:scplr}
+    \mathcal{P}\colon\left\{
+    \begin{array}{lll}
+        \min & \displaystyle\sum_{j = 1}^n x_j \\[20pt]
+             & \displaystyle\sum_{j = 1}^n a_{ij}\,x_j \geq 1 & \forall i \in \mathcal{I} \\[20pt]
+             & x_j \geq 0 & \forall j\colon 1 \leq j \leq n
+    \end{array}\right.
+\end{equation}
+che è quella di un problema di programmazione lineare nella forma canonica
+\begin{equation}\label{eq:scpcanonical}
+    \begin{array}{ll}
+        \min & \vec{c}^{\tr}\vec{x}\\
+        &\vec{A}\vec{x} \geq \vec{b} \\
+        &\vec{x} \geq 0
+    \end{array}
+\end{equation}
+ottenuta ponendo \( \vec{A} = [a_{ij}] \in \mathbb{R}^{m\times n}\), con \( \vec{x} = [x_1, \ldots, x_n]^{\tr} \in
+\mathbb{R}^n \), \( \vec{c} = [1, 1, \ldots, 1]^{\tr} \in \mathbb{R}^n \) e \( \vec{b} = [1, 1, \ldots, 1]^{\tr} \in
+\mathbb{R}^m \).
+
+Naturalmente una soluzione del rilassamento lineare non è neccessariamente ammissibile per il problema di partenza, ma
+fornisce un limite inferiore al suo valore ottimo.
+
+Nel seguito utilizzeremo \( \mathcal{P} \) per riferirci al rilassamento lineare del set-covering.
+
+\subsection{Problema duale}
+Procediamo ora con la definizione del problema duale di \( \mathcal{P} \), seguendo le considerazioni che abbiamo fatto in
+\ref{sec:lpduality}.
+Introduciamo un vettore \( \vec{u} = [u_1, \ldots, u_m]^{\tr} \in \mathbb{R}^m \) di
+moltiplicatori duali per combinare linearmente i vincoli e identificare una limitazione inferiore al valore della
+funzione obiettivo. In particolare, dobbiamo trovare
+\(
+    \vec{u}
+\)
+tale che
+\begin{equation}\label{eq:dualconds}
+    \sum_{j = 1}^n x_j \geq \sum_{i = 1}^m \Big(u_i \sum_{j = 1}^n a_{ij}\, x_j \Big) \geq \sum_{i = 1}^m u_i
+\end{equation}
+A questo punto, per trovare la limitazione migliore possibile, cioè quella più alta, dobbiamo risolvere il problema
+duale
+\begin{equation}\label{eq:scplrdual}
+    \begin{array}{lll}
+        \max & \displaystyle\sum_{i = 1}^m u_i \\[20pt]
+             & \displaystyle\sum_{i = 1}^m a_{ij}\,u_i \leq 1 & \forall j\colon 1 \leq j \leq n \\[20pt]
+             & u_i \geq 0 & \forall i\colon 1 \leq i \leq m
+    \end{array}
+\end{equation}
+che si ottiene dalle disuguaglianze nella \eqref{eq:dualconds}. Notiamo che per come è definito, il vincolo del problema duale
+impone una limitazione superiore ai moltiplicatori, ossia \( u_i \in [0, 1] \) per ogni
+\(
+    1 \leq i \leq m,
+\)
+visto che
+\(
+    a_{ij}
+\)
+è un parametro binario che può assumere solo i valori 0 e 1, per
+\(
+    1 \leq i \leq m \text{ e } 1 \leq j \leq n.
+\)
+Questa limitazione sarà importante più avanti, quando presenteremo la specifica applicazione dell'algoritmo di
+Frank-Wolfe al rilassamento lineare del set-covering.
+
+\section{Rilassamento Lagrangiano}
+Nel corso del primo capitolo abbiamo affrontato l'argomento del rilassamento Lagrangiano, relativamente ai problemi di
+programmazione lineare. In questa sezione possiamo sfruttare i ragionamenti che abbiamo fatto per applicare questo
+concetto alla formulazione \eqref{eq:scplr} del rilassamento lineare del set-covering. Rimuoviamo i vincoli di copertura
+per gli elementi in \( \mathcal{I} \) e aggiungiamo la penalizzazione Lagrangiana alla funzione obiettivo: introduciamo
+un vettore \( \vec{u} = [u_1, \ldots, u_m]^{\tr} \in \mathbb{R}^m \) di moltiplicatori di Lagrange da utilizzare, in
+combinazione con i vincoli che abbiamo rimosso, per costruire un contributo da aggiungere alla funzione obiettivo che ne
+peggiora il valore per tutte le soluzioni che non soddisfano i vincoli che abbiamo eliminato. In questo modo, otteniamo
+la nuova funzione obiettivo
+\begin{equation}
+    \min \; \sum_{j = 1}^n x_j + \sum_{i = 1}^m \Big[u_i \Big(1 - \sum_{j = 1}^n a_{ij}\, x_j\Big)\Big] =
+    \min \; \sum_{j = 1}^n \Big[x_j\Big(1 - \sum_{i = 1}^m a_{ij}\, u_i \Big)\Big] + \sum_{i = 1}^m u_i
+\end{equation}
+e possiamo definire il rilassamento Lagrangiano
+\begin{equation}\label{eq:Lu}
+    \mathcal{L}(\vec{u})\colon
+    \left\{
+    \begin{array}{ll}
+        \min & \displaystyle\sum_{j=1}^n \Big[x_j \Big(1 - \sum_{i = 1}^m a_{ij}\, u_i\Big)\Big] + \sum_{i = 1}^m u_i
+        \\[20pt]
+             & x_j \in [0, 1] \qquad \forall j\colon 1 \leq j \leq n
+    \end{array}\right.
+\end{equation}
+che può essere risolto scegliendo \( x_j = 1\) se e solo se
+\begin{equation}
+    \sum_{i=1}^m a_{ij}\, u_i > 1
+\end{equation}
+per ogni \( 1 \leq j \leq n \) e che fornisce, al variare di \( \vec{u} \in \mathbb{R}^n \), un limite inferiore al valore della funzione
+obiettivo. A questo punto, possiamo definire il problema duale Lagrangiano
+\begin{equation}
+    \max_{\vec{u} \,\geq\, 0}\; \mathcal{L}(\vec{u})
+\end{equation}
+con l'obiettivo di trovare la limitazione inferiore migliore, cioè quella più alta possibile. Inoltre, si può dimostrare
+che il problema duale lagrangiano è un problema di ottimizzazione convessa, poiché la regione ammissibile è un insieme
+convesso e la funzione obiettivo è concava, anche se non necessariamente differenziabile in tutti i punti in cui è
+definita.
+
+Utilizzando la notazione con matrici e vettori, possiamo riscrivere la formulazione \eqref{eq:Lu} nella forma compatta
+\begin{equation}
+    \mathcal{L}(\vec{u}) = \min_{\vec{x} \,\in\,[0, 1]^n}\, \{\vec{c}^{\tr}\vec{x} + \vec{u}^{\tr}(\vec{b}-\vec{A}\vec{x})\}
+\end{equation}
+ricordando che \( \vec{A} = [a_{ij}] \in \mathbb{R}^{m\times n}\), con \( \vec{x} = [x_1, \ldots, x_n]^{\tr} \in
+[0, 1]^n \), \( \vec{c} = [1, 1, \ldots, 1]^{\tr} \in \mathbb{R}^n \) e \( \vec{b} = [1, 1, \ldots, 1]^{\tr} \in
+\mathbb{R}^m \).
+
+Le considerazioni fatte in \ref{sec:lr}, insieme a quelle presentate dopo aver definito il duale di \( \mathcal{P} \),
+ci permettono di concludere che una soluzione ottima \( \vec{u^{\star}} \in \mathbb{R}^m \) del problema duale
+Lagrangiano si può costruire vincolando i moltiplicatori ad assumere valori nell'intervallo \( [0, 1] \), ossia  \(
+\vec{u^{\star}} \in [0, 1]^m\), che è un insieme convesso e compatto.
+
+Infine, presentiamo una proprietà che sarà utile per l'implementazione dell'algoritmo risolutivo. Supponiamo che \(
+\vec{x^{\star}} \) sia una soluzione ottima di \( \mathcal{L}(\vec{\vec{\hat{u}}}) \), per qualche \( \vec{\hat{u}} \in
+\mathbb{R}^m \). Allora il subgradiente di \( \mathcal{L}(\vec{u}) \) in \( \vec{\hat{u}} \) vale \(
+\vec{s}_{\vec{\hat{u}}} = (\vec{b} - \vec{A}\vec{x^{\star}}) \in \mathbb{R}^m \).
+
+\section{Applicazione dell'algoritmo di Frank-Wolfe}\label{sec:fwapplication}
+A questo punto possiamo sfruttare quanto osservato fino a questo punto per applicare l'algoritmo di Frank-Wolfe al
+problema duale Lagrangiano,
+\begin{equation}
+    \max_{\vec{u} \,\in\, [0, 1]^m} \mathcal{L}(\vec{u})
+\end{equation}
+di
+\(
+    \mathcal{P},
+\)
+visto che il dominio \( [0,1]^m \) è compatto e convesso e la funzione obiettivo \( \mathcal{L}(\vec{u}) \) è concava,
+anche se non necessariamente differenziabile in ogni punto. I passaggi sono gli stessi che abbiamo presentato in
+\ref{sec:fw}, da cui si deriva la specifica dell'algoritmo riportata di seguito.
+\begin{tcolorbox}[
+    enhanced jigsaw,
+    opacityback = 0pt,
+    colframe=primary, % Border color
+    colback=white, % Background color
+    boxrule=1pt,   % Border thickness
+    sharp corners, % Sharp corners
+    leftrule=0pt,
+    rightrule=0pt,
+    toprule=2pt,
+    bottomrule=0.5mm,
+    left=1pt,
+    top=1pt,
+    bottom=1pt,
+    adjusted title = Algoritmo di Frank-Wolfe per il problema duale Lagrangiano di \( \mathcal{P} \),
+    halign title = center,
+    fonttitle = \alt\fontseries{mid}\selectfont,
+]
+\begin{algorithm}[H]
+    $ \vec{u}_0 \in [0,1]^m $ punto di partenza \hfill {\alt {\ttfamily /*}  Inizializzazione {\ttfamily */}} \\
+    \While{true}{\vspace*{8pt}
+        $\vec{x}_k = \displaystyle\argmin_{\vec{x} \,\in\,[0, 1]^n}\,
+        \{\vec{c}^{\tr}\vec{x} + \vec{u}_k^{\tr}(\vec{b}-\vec{A}\vec{x})\}$ \hfill {\alt {\ttfamily /*} Calcolo di \(
+        \mathcal{L}(\vec{u}_k) \) {\ttfamily */}}\\
+        $\vec{s}_k = \vec{b} - \vec{A}\vec{x}_k$ \hfill {\alt {\ttfamily /*} Subgradiente in \( \vec{u}_k \) {\ttfamily */}}\\[8pt]
+        $\displaystyle \vec{d}_k = \argmax_{\vec{d} \,\in\, [0,1]^m} \{\vec{s}_k \,\vec{d}\}$ \hfill {\alt
+        {\ttfamily /*}  Passo 1 {\ttfamily */}}\\
+        $\vec{u}_{k+1} = (1 - \gamma)\vec{u}_k + \gamma \vec{d}_k$ con $\gamma = \frac{2}{k+2}$ \hfill {\alt {\ttfamily
+    /*}  Passo 2 {\ttfamily */}}}
+\end{algorithm}
+\end{tcolorbox}
+\noindent
+Osserviamo che, ad ogni iterazione, il valore
+\begin{equation}
+    \alpha_k = \vec{c}^{\tr}\vec{x}_k +
+    \vec{u}^{\tr}(\vec{b}-\vec{A}\vec{x}_k) = \mathcal{L}(\vec{u}_k), \quad \vec{x}_k = \displaystyle\argmin_{\vec{x} \,\in\,[0, 1]^n}
+    \mathcal{L}(\vec{u}_k),
+\end{equation}
+fornisce una limitazione inferiore al valore ottimo e il valore
+\begin{equation}
+   \omega_k = \mathcal{L}(\vec{u}_k) + \vec{s}_k(\vec{d}_k - \vec{u}_k)
+\end{equation}
+rappresenta un limite superiore al valore ottimo. Non c'è nessuna garanzia che le due limitazioni migliorino
+monotonicamente ad ogni iterazione, ma è sufficiente tenere traccia delle limitazioni migliori, \( \alpha^{\star} \) e
+\( \omega^{\star} \), e terminare l'algoritmo quando la differenza è sufficientemente piccola. A quel punto avremo che
+\begin{equation}
+    \alpha^{\star} \leq \mathcal{L}(\vec{u^{\star}}) \leq \omega^{\star}
+\end{equation}
+con \( \vec{u^{\star}} \) che è una soluzione ottima per il problema duale Lagrangiano di \( \mathcal{P} \). In questo
+modo otteniamo un'approssimazione al valore ottimo di \( \mathcal{P} \).
+
+In alcuni casi potrebbe capitare che la differenza desiderata tra le due limitazioni non viene mai raggiunta e quindi,
+per evitare che l'algoritmo continui indefinitamente, si imposta un limite al numero delle iterazioni da eseguire.
+
+\section{Matrice di riferimento} \label{sec:refmat}
+In questo capitolo siamo partiti dalla specifica del problema del set-covering per ottenere la sua
+formulazione matematica come problema di programmazione lineare intera. Successivamente abbiamo definito il rilassamento
+lineare e ci siamo soffermati ad analizzare alcuni aspetti che lo riguardano, concludendo con la definizione del
+problema duale e del rilassamento lagrangiano. L'ottenimento della formulazione \eqref{eq:scplr}, a partire da quella
+presentata in \eqref{eq:defscp}, ci ha permesso di ottenere una formulazione in forma canonica per il rilassamento
+lineare del set-covering. A questo punto, siamo finalmente pronti a capire la convenienza pratica di tale formulazione.
+\`E infatti immediato osservare che descrivere il problema come in \eqref{eq:scplr} ci permette di caratterizzare una
+specifica istanza semplicemente utilizzando la matrice binaria \( \vec{A} = [a_{ij}] \in \mathbb{R}^{m\times n}\),
+evitando di dover specificare gli insiemi \( \mathcal{I} \) e \( \mathcal{F} \). Di conseguenza, per la creazione delle
+istanze da utilizzare nelle prove sperimentali, ci limiteremo a generare matrici binarie di varie dimensioni e con
+diversi valori di sparsità.
+
+\subsection{Rappresentazione CSR}
+\label{sec:csr}
+
+Solitamente le istanze per il problema del set-covering hanno matrici di riferimento molto sparse, cioè matrici con
+molti più zeri che uni. Per questo motivo, può essere conveniente cercare un modo intelligente di rappresentare la
+matrice di riferimento, che non richieda di salvare in memoria i valori di tutti gli elementi. In particolare, visto
+che la matrice è binaria, è sufficiente salvare solamente le informazioni relative agli elementi non nulli. In questo
+modo possiamo risparmiare molta memoria e provare a sfruttare una rappresentazione compatta per ridurre il numero delle
+operazioni da eseguire, evitando quelle che coinvolgono elementi nulli.
+
+La rappresentazione CSR (\textit{Compressed Sparse Row}) permette di rappresentare una matrice sparsa \( \vec{A} \in
+\mathbb{R}^{m\times n}\), con {\jbm nnz} elementi non nulli, utilizzando tre vettori che chiameremo {\jbm values,
+indexes} e {\jbm pointers}. I vettori {\jbm values} e {\jbm indexes}, di lunghezza {\jbm nnz}, memorizzano i valori
+degli elementi non nulli e i loro indici di colonna, rispettivamente. Il vettore {\jbm pointers}, di lunghezza \( m + 1
+\), memorizza in ogni posizione l'indice che segnala l'inizio della riga corrispondente nei vettori {\jbm values} e
+{\jbm pointers}. In altre parole, il valore dell'elemento {\jbm pointers[i]} è l'indice dei vettori {\jbm values} e
+{\jbm indexes} che rappresenta l'inizio della riga {\jbm i} della matrice. Di conseguenza, per riferirci agli elementi
+della riga {\jbm i} è sufficiente considerare i vettori {\jbm values} e {\jbm indexes} nell'intervallo di indici
+delimitato da {\jbm pointers[i]} e {\jbm pointers[i + 1] - 1}.
+
+Questa rappresentazione permette di memorizzare una matrice binaria di \( m \) righe e \( n \) colonne in uno spazio
+molto ridotto. Inoltre, visto che nel nostro caso la matrice da memorizzare è binaria, non è nemmeno necessario
+utilizzare il vettore {\jbm values}, poiché sappiamo che i valori non nulli sono tutti 1.
+
+Per l'implementazione dell'algoritmo risolutivo, che segue i passaggi presentati in \ref{sec:fwapplication},
+memorizzeremo le rappresentazioni CSR della matrice binaria di riferimento e della sua trasposta, con l'obiettivo di
+sfruttare la cache per ottimizzare l'accesso in memoria.
