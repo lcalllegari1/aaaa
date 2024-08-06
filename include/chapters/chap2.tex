@@ -235,7 +235,7 @@ anche se non necessariamente differenziabile in ogni punto. I passaggi sono gli 
     $ \vec{u}_0 \in [0,1]^m $ punto di partenza \hfill {\alt {\ttfamily /*}  Inizializzazione {\ttfamily */}} \\
     \While{true}{\vspace*{8pt}
         $\vec{x}_k = \displaystyle\argmin_{\vec{x} \,\in\,[0, 1]^n}\,
-        \{\vec{c}^{\tr}\vec{x} + \vec{u}_k^{\tr}(\vec{b}-\vec{A}\vec{x})\}$ \hfill {\alt {\ttfamily /*} Calcolo di \(
+        \{\vec{c}^{\tr}\vec{x} + \vec{u}_k^{\tr}(\vec{b}-\vec{A}\vec{x})\}$ \hfill {\alt {\ttfamily /*} Soluzione di \(
         \mathcal{L}(\vec{u}_k) \) {\ttfamily */}}\\
         $\vec{s}_k = \vec{b} - \vec{A}\vec{x}_k$ \hfill {\alt {\ttfamily /*} Subgradiente in \( \vec{u}_k \) {\ttfamily */}}\\[8pt]
         $\displaystyle \vec{d}_k = \argmax_{\vec{d} \,\in\, [0,1]^m} \{\vec{s}_k \,\vec{d}\}$ \hfill {\alt
