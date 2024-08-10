@@ -72,7 +72,7 @@ Nel seguito di questo lavoro ci limiteremo a considerare il rilassamento lineare
 vincolo di interezza per le variabili e richiede solamente che siano non negative. Inoltre, nell'ottica di quanto
 presentato nel prossimo capitolo, è conveniente considerare una formulazione alternativa, del tutto equivalente a quella
 presentata in \eqref{eq:defscp}, ottenuta trasformando il vincolo \eqref{eq:dummyconstr} in
-\begin{equation}
+\begin{equation}\label{eq:coverconss}
     \sum_{j=1}^n a_{ij}x_j \geq 1 \qquad \forall i \in \mathcal{I},
 \end{equation}
 dove \( a_{ij} \) è un parametro binario che assume il valore 1 se e solo se
@@ -148,7 +148,7 @@ visto che
 Questa limitazione sarà importante più avanti, quando presenteremo la specifica applicazione dell'algoritmo di
 Frank-Wolfe al rilassamento lineare del set-covering.
 
-\section{Rilassamento Lagrangiano}
+\section{Rilassamento Lagrangiano}\label{sec:lagrangianrelaxationapplied}
 Nel corso del primo capitolo abbiamo affrontato l'argomento del rilassamento Lagrangiano, relativamente ai problemi di
 programmazione lineare. In questa sezione possiamo sfruttare i ragionamenti che abbiamo fatto per applicare questo
 concetto alla formulazione \eqref{eq:scplr} del rilassamento lineare del set-covering. Rimuoviamo i vincoli di copertura
@@ -177,7 +177,7 @@ che può essere risolto scegliendo \( x_j = 1\) se e solo se
 \end{equation}
 per ogni \( 1 \leq j \leq n \) e che fornisce, al variare di \( \vec{u} \in \mathbb{R}^n \), un limite inferiore al valore della funzione
 obiettivo. A questo punto, possiamo definire il problema duale Lagrangiano
-\begin{equation}
+\begin{equation}\label{eq:lagrangianduale}
     \max_{\vec{u} \,\geq\, 0}\; \mathcal{L}(\vec{u})
 \end{equation}
 con l'obiettivo di trovare la limitazione inferiore migliore, cioè quella più alta possibile. Inoltre, si può dimostrare
@@ -186,7 +186,7 @@ convesso e la funzione obiettivo è concava, anche se non necessariamente differ
 definita.
 
 Utilizzando la notazione con matrici e vettori, possiamo riscrivere la formulazione \eqref{eq:Lu} nella forma compatta
-\begin{equation}
+\begin{equation}\label{eq:vecLu}
     \mathcal{L}(\vec{u}) = \min_{\vec{x} \,\in\,[0, 1]^n}\, \{\vec{c}^{\tr}\vec{x} + \vec{u}^{\tr}(\vec{b}-\vec{A}\vec{x})\}
 \end{equation}
 ricordando che \( \vec{A} = [a_{ij}] \in \mathbb{R}^{m\times n}\), con \( \vec{x} = [x_1, \ldots, x_n]^{\tr} \in
@@ -225,6 +225,7 @@ anche se non necessariamente differenziabile in ogni punto. I passaggi sono gli 
     boxrule=0pt,   % Border thickness
     sharp corners, % Sharp corners
     left=1pt,
+    right=0pt,
     top=1pt,
     bottom=1pt,
     adjusted title = Algoritmo di Frank-Wolfe per il problema duale Lagrangiano di \( \mathcal{P} \),
@@ -292,12 +293,12 @@ operazioni da eseguire, evitando quelle che coinvolgono elementi nulli.
 
 La rappresentazione CSR (\textit{Compressed Sparse Row}) permette di rappresentare una matrice sparsa \( \vec{A} \in
 \mathbb{R}^{m\times n}\), con {\jbm nnz} elementi non nulli, utilizzando tre vettori che chiameremo {\jbm values,
-indexes} e {\jbm pointers}. I vettori {\jbm values} e {\jbm indexes}, di lunghezza {\jbm nnz}, memorizzano i valori
+indices} e {\jbm pointers}. I vettori {\jbm values} e {\jbm indices}, di lunghezza {\jbm nnz}, memorizzano i valori
 degli elementi non nulli e i loro indici di colonna, rispettivamente. Il vettore {\jbm pointers}, di lunghezza \( m + 1
 \), memorizza in ogni posizione l'indice che segnala l'inizio della riga corrispondente nei vettori {\jbm values} e
 {\jbm pointers}. In altre parole, il valore dell'elemento {\jbm pointers[i]} è l'indice dei vettori {\jbm values} e
-{\jbm indexes} che rappresenta l'inizio della riga {\jbm i} della matrice. Di conseguenza, per riferirci agli elementi
-della riga {\jbm i} è sufficiente considerare i vettori {\jbm values} e {\jbm indexes} nell'intervallo di indici
+{\jbm indices} che rappresenta l'inizio della riga {\jbm i} della matrice. Di conseguenza, per riferirci agli elementi
+della riga {\jbm i} è sufficiente considerare i vettori {\jbm values} e {\jbm indices} nell'intervallo di indici
 delimitato da {\jbm pointers[i]} e {\jbm pointers[i + 1] - 1}.
 
 Questa rappresentazione permette di memorizzare una matrice binaria di \( m \) righe e \( n \) colonne in uno spazio

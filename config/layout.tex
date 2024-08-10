@@ -74,13 +74,23 @@
     numberstyle = \color{gray}\scriptsize\jbm,
     xleftmargin = 25pt,
     captionpos = b,
-    abovecaptionskip = 5pt,
+    abovecaptionskip = 20pt,
     belowcaptionskip = 0pt,
     showspaces = false,
     showstringspaces = false,
 }
 
-\newtcolorbox{code}[1]{
+\lstdefinestyle{style2}{
+    inputencoding=utf8/latin1,
+    basicstyle = \linespread{1}\small\jbm,
+    captionpos = b,
+    abovecaptionskip = 0pt,
+    belowcaptionskip = 0pt,
+    showspaces = false,
+    showstringspaces = false,
+}
+
+\newtcolorbox{code2}[1]{
     enhanced jigsaw,
     sharp corners,
     boxrule = 0.5mm,
@@ -98,6 +108,68 @@
     #1,
 }
 
+\newtcolorbox{code}[1]{
+    enhanced,
+    sharp corners,
+    boxrule = 0pt,
+    frame hidden,
+    colback = white,
+    attach boxed title to top right = {yshift = -3.5mm, xshift = -3mm},
+    boxed title style = {
+        sharp corners,
+        left = 2pt,
+        right = 2pt,
+        top = 1pt,
+        bottom = 1pt,
+        colback = primary,
+        colframe = white,
+    },
+    fonttitle = \color{white}\bfseries\jbm,
+    top = 5pt,
+    borderline north = {0.5mm}{0pt}{primary},
+    borderline south = {0.5mm}{27pt}{primary},
+    bottom = 0pt,
+    left = 0pt,
+    right = 0pt,
+    breakable,
+    bottomrule at break = 0pt,
+    toprule at break = 0pt,
+    #1,
+}
+
+\newtcolorbox{inline}{
+    enhanced,
+    sharp corners,
+    colframe = white,
+    borderline west={0.5mm}{0pt}{primary}, % Add a left border with specific settings
+    colback = white,
+    boxrule = 0pt,
+    boxsep = 0pt,
+    fonttitle = \large\color{primary}\alt\fontseries{mid}\selectfont,
+    attach title to upper = {\par},
+    halign title = left,
+    left = 10pt,
+    right = 0pt,
+    top = 0pt,
+    bottom = 0pt,
+    breakable,
+}
+
+\newtcolorbox{inlinecmd}{
+    enhanced,
+    sharp corners,
+    colframe = white,
+    borderline west={0.5mm}{0pt}{primary}, % Add a left border with specific settings
+    colback = white,
+    boxrule = 0pt,
+    boxsep = 0pt,
+    halign title = left,
+    left = 5pt,
+    right = 0pt,
+    top = 2pt,
+    bottom = 2pt,
+    breakable,
+}
 \newtcbtheorem[number within = chapter]{definition}{\hspace*{-10pt}Definizione}{
     enhanced,
     sharp corners,
