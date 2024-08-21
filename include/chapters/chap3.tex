@@ -315,7 +315,7 @@ double L(const double * const u, uint8_t * const x) {
         for (int i = row_start(&T, j); j < row_end(&T, j); i++) {
             result += u[T.indices[i]];
         }
-        if (x[i] = (result > 1)) {
+        if (x[j] = (result > 1)) {
             objective += (1 - result);
         }
     }
@@ -429,12 +429,12 @@ corrente.
 Procediamo ora a calcolare il punto successivo utilizzando quanto discusso in \ref{sec:fwapplication}, che poneva
 \(
 \vec{u}_{k+1} = (1 - \gamma)\vec{u}_k + \gamma \vec{d}_k = \vec{u}_k + \gamma(\vec{d}_k - \vec{u}_k)
-\)
+\),
 da cui segue il codice seguente.
 \begin{code}{adjusted title = {\cicon\ solver.c}}
 \begin{lstlisting}[language=c, style = style, caption={Calcolo di \( \vec{u}_{k + 1} \).}]
 void next_u(double * const u, const uint8_t * const d, double gamma) {
-    for (int i = 0; i < M; i++) {
+    for (int i = 0; i < m; i++) {
         u[i] += gamma * (d[i] - u[i]);
     }
 }
@@ -488,7 +488,11 @@ void update_upper_bound(double * const upper_bound, double objective,
 
 \subsection{Composizione dell'algoritmo risolutivo}
 Finalmente possiamo mettere insieme tutti i pezzi e comporre l'algoritmo risolutivo.
-
+\begin{code}{adjusted title = {\cicon\ solver.c}}
+\begin{lstlisting}[language=c, style = style, caption={Implementazione dell'algoritmo risolutivo.}]
+Pls don't give up now
+\end{lstlisting}
+\end{code}
 \newpage
 
 \section{Esecuzione}
@@ -496,8 +500,217 @@ Finalmente possiamo mettere insieme tutti i pezzi e comporre l'algoritmo risolut
 \subsection{Output}
 
 \chapter{Risultati}
+Questo capitolo ha l'obiettivo di discutere i risultati sperimentali ottenuti con l'esecuzione
+dell'algoritmo del simplesso e dell'algoritmo di Frank-Wolfe su istanze del rilassamento lineare del set-covering.
 
 \section{Prove sperimentali}
+Per valutare l'efficienza e l'applicabilità dell'algoritmo di Frank-Wolfe abbiamo effettuato varie prove sperimentali su
+numerose istanze, variando la dimensione e la sparsità della matrice di riferimento. Inoltre, per ogni coppia di valori
+che identificano dimensione e sparsità abbiamo ripetuto gli esperimenti su molteplici istanze, con l'obiettivo di
+ottenere risultati più accurati. Infine abbiamo calcolato la media e la deviazione standard di questi risultati, in modo
+da poterli riassumere utilizzando opportuni grafici.
+
+Inizialmente abbiamo condotto degli esperimenti per studiare la qualità della soluzione prodotta dall'algoritmo di
+Frank-Wolfe, confrontandola con il valore ottimo ottenuto attraverso l'algoritmo del simplesso, al variare del numero di
+iterazioni effettuate.
+
+Successivamente abbiamo svolto delle prove per confrontare i tempi di esecuzione dei due algoritmi, con l'obiettivo di
+capire se è possibile utilizzare l'algoritmo di Frank-Wolfe per trovare una limitazione ragionevole al valore ottimo in
+un tempo molto ridotto. In questo caso la difficoltà è trovare il compromesso tra la qualità della soluzione e il tempo
+impiegato per determinarla. In particolare, dobbiamo evitare che il tempo impiegato dall'algoritmo di Frank-Wolfe per
+determinare una limitazione ragionevole superi quello impiegato dall'algoritmo del simplesso per trovare il valore
+ottimo. In altre parole, dobbiamo impostare un limite al numero delle iterazioni che ci permetta di eseguire l'algoritmo
+in un tempo molto ridotto e contemporaneamente di ottenere una buona limitazione al valore ottimo. Tuttavia, non c'è
+alcuna garanzia sull'esistenza tale numero. In alcuni casi potrebbe accadere che l'algoritmo di Frank-Wolfe è
+completamente dominato dall'algoritmo del simplesso.
+
+Nello svolgimento degli esperimenti abbiamo utilizzato tre classi di istanze, definite sulla base del numero degli
+elementi della matrice di riferimento. I valori di sparsità che abbiamo scelto sono particolarmente alti, in accordo con
+il fatto che i problemi di set-covering sono caratterizzati da matrici generalmente molto sparse.
+
+\subsection{Istanze di taglia piccola}
+La classe di istanze di taglia piccola è caratterizzata da matrici di riferimento che hanno al massimo $10\,000$
+elementi.
+Come riferimento per la dimensione e la sparsità di questo tipo di istanze, utilizzeremo i valori riportati
+nella tabella \ref{table:small_info}.
+
+\begin{table}[h]
+    \centering
+    \begin{tabularx}{268.76292pt}{ccc}
+        \toprule
+        \text{\alt Righe} & \text{\alt Colonne} & \text{\alt Sparsità} \\
+        \midrule
+        100 & 10 & 0.800 \vphantom{|} 0.825 \vphantom{|} 0.850 \vphantom{|} 0.875 \vphantom{|} 0.900 \\
+        100 & 50 & 0.850 \vphantom{|} 0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \\
+        100 & 100 & 0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Dimensione e sparsità delle matrici di riferimento per istanze di taglia piccola.}
+    \label{table:small_info}
+\end{table}
+
+\subsection{Istanze di taglia media}
+La classe di istanze di taglia media è caratterizzata da matrici di riferimento che hanno un numero di elementi compreso
+tra \( 10\,000 \) e \( 1\,000\,000 \).
+Come riferimento per la dimensione e la sparsità di questo tipo di istanze, utilizzeremo i valori riportati
+nella tabella \ref{table:medium_info}.
+
+\begin{table}[h]
+    \centering
+    \begin{tabularx}{268.76292pt}{ccc}
+        \toprule
+        \text{\alt Righe} & \text{\alt Colonne} & \text{\alt Sparsità} \\
+        \midrule
+        500 & 100 & 0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \\
+        1000 & 100 &  0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \\
+        1000 & 1000 & 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \vphantom{|} 0.995 \vphantom{|} 0.999 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Dimensione e sparsità delle matrici di riferimento per istanze di taglia media.}
+    \label{table:medium_info}
+\end{table}
+\subsection{Istanze di taglia grande}
+La classe di istanze di taglia grande è caratterizzata da matrici di riferimento che hanno un numero di elementi
+maggiore di $1\,000\,000$.
+Come riferimento per la dimensione e la sparsità di questo tipo di istanze, utilizzeremo i valori riportati
+nella tabella \ref{table:big_info}.
+
+\begin{table}[h]
+    \centering
+    \begin{tabularx}{270.85823pt}{ccc}
+        \toprule
+        \text{\alt Righe} & \text{\alt Colonne} & \text{\alt Sparsità} \\
+        \midrule
+        5000 & 1000 & 0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \\
+        10000 & 1000 &  0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \\
+        10000 & 5000 & 0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Dimensione e sparsità delle matrici di riferimento per istanze di taglia grande.}
+    \label{table:big_info}
+\end{table}
+
+\section{Qualità delle soluzioni}
+Procediamo ora con l'esecuzione dei due algoritmi per confrontare la soluzione prodotta dall'algoritmo di Frank-Wolfe
+con il valore ottimo trovato dall'algoritmo del simplesso. Per il momento, in questo esperimento non ci preoccupiamo di
+limitare il numero delle iterazioni, e quindi il tempo di esecuzione di Frank-Wolfe, poiché l'obiettivo è solamente quello
+di determinare la qualità della soluzione prodotta dall'algoritmo di Frank-Wolfe.
+
+Iniziamo considerando le istanze di taglia piccola. Per le matrici \( 100\times 10 \) abbiamo ottenuto i risultati
+riportati nella figura \ref{fig:quality_small1}.
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=.787]{assets/figures/tony.pdf}
+    \caption{Qualità delle limitazioni prodotte dall'algoritmo di Frank-Wolfe, normalizzate rispetto al valore ottimo
+    trovato dall'algoritmo del simplesso, per matrici \( 100\times10 \).}
+    \label{fig:quality_small1}
+\end{figure}
+
+\noindent Osserviamo che nonostante la dimensione ridotta della matrice, le piccole variazioni in termini di sparsità
+hanno un grande effetto sulla qualità della limitazione inferiore prodotta dall'algoritmo di Frank-Wolfe. In
+particolare, notiamo che l'aumentare del valore di sparsità corrisponde a un miglioramento nel valore della limitazione
+inferiore, ma non ha alcun effetto sulla limitazione superiore, che coincide quasi sempre con il valore ottimo fornito
+dall'algoritmo del simplesso. Inoltre, quando la sparsità è abbastanza elevata, anche la limitazione inferiore raggiunge
+il valore ottimo.
+
+Considerando matrici di riferimento \( 100\times50 \) e \( 100\times100 \), otteniamo i risultati della figura
+\ref{fig:quality_small2}. In questo caso, l'aumento del numero di elementi ci ha permesso di considerare valori di
+sparsità ancora più alti. Notiamo che, diversamente da quanto accadeva in precedenza, l'aumento
+della sparsità non è più garanzia di un miglioramento nel valore della limitazione inferiore ma è indicatore di un
+miglioramento nel valore della limitazione superiore che però, in questo caso, non è più così vicina al valore ottimo
+come accadeva con matrici \( 100\times 10 \). Come prima, anche in questo caso utilizzare un valore di sparsità
+sufficientemente elevato ci permette di chiudere sul valore ottimo con entrambe le limitazioni. Se invece consideriamo
+valori di sparsità inferiori, le limitazioni non sono poi così buone.
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=.787]{assets/figures/Small23.pdf}
+    \caption{Qualità delle limitazioni prodotte dall'algoritmo di Frank-Wolfe, normalizzate rispetto al valore ottimo
+    trovato dall'algoritmo del simplesso, per matrici \( 100\times 50 \) (sopra) e \( 100\times100 \) (sotto).}
+    \label{fig:quality_small2}
+\end{figure}
+
+\noindent
+In aggiunta, si osserva sperimentalmente che la qualità delle limitazioni superiori prodotte da Frank-Wolfe è
+influenzata molto di più dal numero delle variabili del problema, piuttosto che dal numero degli elementi della matrice
+di riferimento ad esso associata. La figura \ref{fig:quality_small_extra} mostra i risultati dell'esecuzione dei due
+algoritmi su istanze aggiuntive che confermano quanto appena argomentato.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{assets/figures/Extra.pdf}
+    \caption{Qualità delle limitazioni prodotte dall'algoritmo di Frank-Wolfe, normalizzate rispetto al valore ottimo
+    trovato dall'algoritmo del simplesso, per matrici \( 200\times 25 \) (sinistra) e \( 200\times50 \) (destra).}
+    \label{fig:quality_small_extra}
+\end{figure}
+
+\noindent
+Le istanze identificate da matrici \( 100\times 50 \) e \( 200\times 25 \) sono caratterizzate dallo stesso numero di
+elementi, ma confrontando il grafico associato alle matrici \( 100\times 50 \) della figura \ref{fig:quality_small2} con
+il grafico a sinistra della figura \ref{fig:quality_small_extra}, che si riferisce a matrici \( 200\times 25 \), si nota
+immediatamente la differenza nella qualità della limitazione superiore. L'esecuzione dell'algoritmo di Frank-Wolfe sulle
+istanze con un numero maggiore di variabili ha prodotto limitazioni superiori peggiori rispetto a quanto ottenuto per
+istanze caratterizzate da un numero inferiore di variabili, nonostante la sparsità e il numero degli elementi delle
+matrici di riferimento fosse lo stesso. Se invece ci riferiamo a istanze che hanno matrici di riferimento con lo stesso
+numero di variabili, è sufficiente confrontare il grafico a destra della figura \ref{fig:quality_small_extra} con il
+grafico in alto nella figura \ref{fig:quality_small2} per capire che l'aumento del numero di elementi della matrice di
+riferimento non è un fattore così influente sulla qualità della limitazione superiore. Anzi, a parità di sparsità e
+numero di variabili, l'aumento del numero degli elementi causa un miglioramento nella limitazione superiore. Di
+conseguenza, la differenza nella qualità delle limitazioni superiori prodotte da Frank-Wolfe per le istanze con matrici
+di riferimento \( 200\times 25 \) e  \( 200\times 50 \) è da attribuire alla variazione nel numero delle variabili,
+piuttosto che alla variazione del numero degli elementi.
+
+\end{document}
+
+
+\section{Confronto dei tempi di esecuzione}
+
+Iniziamo confrontando i tempi di esecuzione dei due algoritmi per istanze di taglia diversa. Abbiamo individuato tre
+classi di istanze in base del numero di elementi della matrice di riferimento e per ciascuna di queste procederemo
+ad eseguire i due algoritmi. Inoltre, per ciascuna classe consideriamo diversi valori di sparsità delle matrici ed effettuiamo
+l'esperimento su molteplici istanze.
+
+\subsection{Istanze di taglia piccola}
+La classe di istanze di taglia piccola è costituita da istanze caratterizzate da matrici di riferimento con \( m \)
+righe e
+\(
+    n
+\)
+colonne tali che il numero di elementi è \( m\times n \leq 10\,000 \).
+
+\subsection{Istanze di taglia media}
+La classe di istanze di taglia media è costituita da istanze caratterizzate da matrici di riferimento con \( m \)
+righe e
+\(
+    n
+\)
+colonne tali che il numero di elementi è \( m\times n \leq 1\,000\,000 \).
+
+\subsection{Istanze di taglia grande}
+La classe di istanze di taglia grande è costituita da istanze caratterizzate da matrici di riferimento con \( m \)
+righe e
+\(
+    n
+\)
+colonne tali che il numero di elementi è \( m\times n \leq 10000 \).
+
+
+\newpage
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=.787]{assets/figures/Figure_15.pdf}
+    \caption{hi}
+\end{figure}
+
+
+L'esperimento è stato effettuato su istanze di taglia diversa per capire come variano i tempi di esecuzione al variare
+del numero di elementi della matrice di riferimento. Inoltre, a parità di taglia abbiamo svolto l'esperimento su istanze
+caratterizzate da matrici di riferimento con valori di sparsità differenti.
+
+
+
+Inoltre, abbiamo analizzato la qualità della
+soluzione prodotta dall'algoritmo di Frank-Wolfe al variare del numero di iterazioni, con l'obiettivo di individuare un
+limite che garantisca una soluzione accettabile in un tempo ridotto.
+\newpage
 
 \section{Confronto dei tempi di esecuzione}
 
@@ -514,3 +727,101 @@ Finalmente possiamo mettere insieme tutti i pezzi e comporre l'algoritmo risolut
 \subsection{Gap sul valore ottimo}
 
 \subsection{Numero di iterazioni}
+
+
+\begin{landscape}
+\begin{figure}[b]
+    \centering
+    \includegraphics[scale=0.7]{assets/figures/firstactualtest.pdf}
+    \caption{hi}
+\end{figure}
+\end{landscape}
+
+\newpage
+
+
+\begin{landscape}
+\begin{table}[h]
+    \centering
+    \begin{tabularx}{1.35\textwidth}{XXXXccXX}
+        \toprule
+        && \multicolumn{2}{c}{\textbf{Simplex}} & \multicolumn{4}{c}{\textbf{Frank-Wolfe}}\\ \midrule
+        \textbf{Size} & \textbf{Sparsity} & \textbf{Objective} & \textbf{Time} &
+        \textbf{Lower Bound} & \textbf{Upper Bound} & \textbf{Time} & \textbf{Iterations} \\ \midrule
+        10x10 & 0.2 & 8.765 & 0.456 & 7.890 & 13.585 & 0.014 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{A well-formatted table using booktabs and tabularx}
+    \label{table:booktabs}
+\end{table}
+
+\end{landscape}
+
+\newpage
+\begin{landscape}
+\begin{figure}[b]
+    \centering
+    \includegraphics[scale=0.75]{assets/figures/barplot.pdf}
+    \caption{hi}
+\end{figure}
+\end{landscape}
+
+\newpage
+
+%\begin{landscape}
+%\begin{table}[ht]
+%    \centering
+%    \begin{tabularx}{\textwidth}{c c c c c c c}  % Define eight columns
+%        \toprule
+%        \multicolumn{2}{c}{\textbf{\alt 10$\times$10}} & \multicolumn{2}{c}{\textbf{\alt Simplesso}} &
+%        \multicolumn{3}{c}{\textbf{\alt Frank-Wolfe (1000 iterazioni)}} \\
+%        \cmidrule(lr){1-2} \cmidrule(lr){3-4} \cmidrule(lr){5-7}
+%        \textbf{\alt Sparsità} & \textbf{\alt Istanza} & \textbf{\alt Valore Ottimo} & \textbf{\alt Tempo (ms)} &
+%        \textbf{\alt Limite Inferiore} &
+%        \textbf{\alt Limite Superiore} & \textbf{\alt Tempo (ms)} \\
+%        \cmidrule(lr){1-2} \cmidrule(lr){3-4} \cmidrule(lr){5-7}
+%        10x10 & 0.2 & 8.723382 & 0.372821 & 7.897323 & 14.328123 & 0.034123 \\
+%        10x10 & 0.2 & 8.723 & 0.372 & 7.897 & 14.328 & 0.034 \\
+%        10x10 & 0.2 & 8.723 & 0.372 & 7.897 & 14.328 & 0.034 \\
+%        10x10 & 0.2 & 8.723 & 0.372 & 7.897 & 14.328 & 0.034 \\
+%        10x10 & 0.2 & 8.723 & 0.372 & 7.897 & 14.328 & 0.034 \\
+%        10x10 & 0.2 & 8.723 & 0.372 & 7.897 & 14.328 & 0.034 \\
+%        10x10 & 0.2 & 8.723 & 0.372 & 7.897 & 14.328 & 0.034 \\
+%        10x10 & 0.2 & 8.723 & 0.372 & 7.897 & 14.328 & 0.034 \\
+%        10x10 & 0.2 & 8.723 & 0.372 & 7.897 & 14.328 & 0.034 \\
+%        10x10 & 0.2 & 8.723 & 0.372 & 7.897 & 14.328 & 0.034 \\
+%        \cmidrule(lr){1-2} \cmidrule(lr){3-4} \cmidrule(lr){5-7}
+%        \multicolumn{2}{c}{\textbf{\alt Mediana}} & 8.723 & 0.372 & 7.897 & 14.328 & 0.034 \\
+%        \multicolumn{2}{c}{\textbf{\alt Media}} & 8.723 & 0.372 & 7.897 & 14.328 & 0.034 \\
+%        \multicolumn{2}{c}{\textbf{\alt Deviazione Standard}} & 8.723 & 0.372 & 7.897 & 14.328 & 0.034 \\
+%        \bottomrule
+%    \end{tabularx}
+%    \caption{Comparison of Simplex and Frank-Wolfe methods}
+%    \label{table:comparison}
+%\end{table}
+%\end{landscape}
+
+\newpage
+\begin{table}[ht]
+    \centering
+    \begin{tabularx}{386.53947pt}{ccccc}  % Define eight columns
+        \toprule
+        & \multicolumn{2}{c}{\text{\alt Simplesso (ms)}} & \multicolumn{2}{c}{\text{\alt Frank-Wolfe (ms)}} \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+        \text{\alt Sparsità} &  \text{\alt Media} & \text{\alt Deviazione Standard}
+        & \text{\alt Media} & \text{\alt Deviazione Standard} \\
+        \cmidrule(lr){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+        0.2 & 406.146 & 18.793 & 114.911 & 2.456 \\
+        0.3 & 377.539 & 16.088 & 106.234 & 4.256 \\
+        0.4 & 353.128 & 13.376 & 91.993 & 2.444 \\
+        0.5 & 301.810 & 6.420 & 78.984 & 1.530 \\
+        0.6 & 272.485 & 7.833 & 68.542 & 1.861 \\
+        0.7 & 234.555 & 7.172 & 55.862 & 0.770 \\
+        0.8 & 205.662 & 7.182 & 41.336 & 2.501 \\
+        0.9 & 109.421 & 18.446 & 22.232 & 0.700 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Confronto dei tempi (medi) di esecuzione dell'algoritmo del simplesso e dell'algoritmo di Frank-Wolfe per
+    istanze 1000x100. L'algoritmo di Frank-Wolfe termina dopo 1000 iterazioni.}
+    \label{table:comparidsson}
+\end{table}
