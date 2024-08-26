@@ -500,8 +500,7 @@ ottenere risultati più accurati. Infine abbiamo calcolato la media e la deviazi
 da poterli riassumere utilizzando opportuni grafici.
 
 Inizialmente abbiamo condotto degli esperimenti per studiare la qualità della soluzione prodotta dall'algoritmo di
-Frank-Wolfe, confrontandola con il valore ottimo ottenuto attraverso l'algoritmo del simplesso, al variare del numero di
-iterazioni effettuate.
+Frank-Wolfe, confrontandola con il valore ottimo ottenuto attraverso l'algoritmo del simplesso.
 
 Successivamente abbiamo svolto delle prove per confrontare i tempi di esecuzione dei due algoritmi, con l'obiettivo di
 capire se è possibile utilizzare l'algoritmo di Frank-Wolfe per trovare una limitazione ragionevole al valore ottimo in
@@ -509,13 +508,11 @@ un tempo molto ridotto. In questo caso la difficoltà è trovare il compromesso 
 impiegato per determinarla. In particolare, dobbiamo evitare che il tempo impiegato dall'algoritmo di Frank-Wolfe per
 determinare una limitazione ragionevole superi quello impiegato dall'algoritmo del simplesso per trovare il valore
 ottimo. In altre parole, dobbiamo impostare un limite al numero delle iterazioni che ci permetta di eseguire l'algoritmo
-in un tempo molto ridotto e contemporaneamente di ottenere una buona limitazione al valore ottimo. Tuttavia, non c'è
-alcuna garanzia sull'esistenza tale numero. In alcuni casi potrebbe accadere che l'algoritmo di Frank-Wolfe è
-completamente dominato dall'algoritmo del simplesso.
+in un tempo molto ridotto e contemporaneamente di ottenere una buona limitazione al valore ottimo. Tuttavia, potrebbero
+esserci casi in cui l'algoritmo di Frank-Wolfe è completamente dominato dall'algoritmo del simplesso.
 
-Nello svolgimento degli esperimenti abbiamo utilizzato tre classi di istanze, definite sulla base del numero degli
-elementi della matrice di riferimento. I valori di sparsità che abbiamo scelto sono particolarmente alti, in accordo con
-il fatto che i problemi di set-covering sono caratterizzati da matrici generalmente molto sparse.
+Nello svolgimento degli esperimenti abbiamo scelto valori di sparsità particolarmente alti, in accordo con il fatto che
+i problemi di set-covering sono caratterizzati da matrici generalmente molto sparse.
 
 \section{Qualità delle soluzioni}
 Procediamo ora con l'esecuzione dei due algoritmi per confrontare la soluzione prodotta dall'algoritmo di Frank-Wolfe
@@ -523,146 +520,341 @@ con il valore ottimo trovato dall'algoritmo del simplesso. In questo esperimento
 limitare il numero delle iterazioni, e quindi il tempo di esecuzione di Frank-Wolfe, poiché l'obiettivo è solamente quello
 di determinare la qualità della soluzione prodotta dall'algoritmo di Frank-Wolfe.
 
+
 \subsection{Dimensione della matrice di riferimento}
-Iniziamo considerando l'esecuzione dell'algoritmo di Frank-Wolfe su istanze di dimensioni differenti, relativamente al numero
-di elementi della matrice di riferimento, al variare del valore di sparsità. I risultati sono riassunti nei grafici
-della Figura \ref{fig:bysize}.
+Iniziamo considerando istanze di dimensioni differenti, in quanto a numero di elementi della matrice di riferimento. In
+questo caso ci limiteremo ad analizzare gli aspetti che riguardano il numero di elementi della matrice di riferimento,
+ignorando tutti gli altri parametri, che verranno analizzati singolarmente nel seguito. I risultati sono riassunti dai
+grafici della Figura \ref{fig:bysize}.
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{assets/figures/bysize.pdf}
+    \includegraphics[width=\textwidth]{assets/figures/size.pdf}
     \caption{qualità delle limitazioni prodotte dall'algoritmo di Frank-Wolfe al variare della sparsità e del numero di elementi della
     matrice di riferimento delle istanze.}
     \label{fig:bysize}
 \end{figure}
 
 \noindent
-Osserviamo che quando la sparsità della matrice di riferimento è sufficientemente elevata, l'algoritmo di Frank-Wolfe
-riesce a chiudere sul valore ottimo con entrambe le limitazioni, indipendentemente dalla dimensione dell'istanza.
-Per
-valori di sparsità inferiori, la situazione è molto diversa e il numero degli elementi della matrice di riferimento
-influenza significativamente la qualità della limitazione superiore, ma non quella della limitazione inferiore. In
-particolare, a parità di sparsità, l'aumentare del numero di elementi determina un peggioramento nella qualità della
-limitazione superiore prodotta dall'algoritmo di Frank-Wolfe. La limitazione inferiore ha invece un andamento più
-irregolare.
-Per matrici che hanno un numero ridotto di elementi, l'aumento della sparsità è indicatore di un miglioramento della
-limitazione inferiore. Al contrario, quando la dimensione delle istanze cresce, l'aumento della sparsità non corrisponde
-più a un miglioramento nella qualità della limitazione inferiore. Inoltre, per istanze di dimensione sufficientemente
-elevata, la variazione di sparsità non è così influente sulla qualità della limitazione inferiore, che è molto più
-stabile rispetto a quella della limitazione superiore. In generale, la qualità della limitazione inferiore rimane buona
-per tutte le dimensioni che abbiamo utilizzato negli esperimenti.
+Osserviamo che per tutte le istanze che abbiamo scelto, avere un valore di sparsità sufficientemente elevato permette
+all'algoritmo di Frank-Wolfe di produrre delle buone limitazioni e, in alcuni casi, anche di chiudere sul valore ottimo
+fornito dall'algoritmo del simplesso.
+Inoltre, a parità di sparsità, l'aumentare del numero di elementi della matrice di riferimento è indicatore di
+un peggioramento nella qualità della limitazione superiore e di un miglioramento nella limitazione inferiore. Il
+peggioramento della limitazione superiore è più marcato rispetto al miglioramento della limitazione inferiore, che
+rimane invece molto più stabile. Per capire meglio quanto l'aumentare del numero di elementi della matrice di
+riferimento influenza le limitazioni prodotte da Frank-Wolfe, abbiamo riportato i valori precisi, ottenuti dallo
+svolgimento degli esperimenti, nelle tabelle che seguono.
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabularx}{300.75005pt}{ccc}
+        \toprule
+        \text{\alt Dimensione} & \text{\alt Limitazione Inferiore} & \text{\alt Limitazione Superiore} \\
+        \midrule
+        \( 100\times 100 \) & 0.888 & 1.480 \\
+        \( 250\times 250 \) & 0.916 & 2.241 \\
+        \( 500\times 500 \) & 0.931 & 2.898 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{valori delle limitazioni prodotte da Frank-Wolfe, normalizzati rispetto al valore ottimo fornito dal
+    simplesso, al variare della dimensione delle matrici di riferimento di istanze con sparsità pari a 0.9.}
+    \label{table:firstinfo0.9}
+\end{table}
+
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabularx}{304pt}{ccc}
+        \toprule
+        \text{\alt Dimensione} & \text{\alt Limitazione Inferiore} & \text{\alt Limitazione Superiore} \\
+        \midrule
+        \( 100\times 100 \) & 0.855 & 1.204 \\
+        \( 250\times 250 \) & 0.899 & 1.850 \\
+        \( 500\times 500 \) & 0.920 & 2.525 \\
+        \( 1000\times 1000 \) & 0.932 & 3.237 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{valori delle limitazioni prodotte da Frank-Wolfe, normalizzati rispetto al valore ottimo fornito dal
+    simplesso, al variare della dimensione delle matrici di riferimento di istanze con sparsità pari a 0.95.}
+    \label{table:firstinfo0.95}
+\end{table}
+
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabularx}{304pt}{ccc}
+        \toprule
+        \text{\alt Dimensione} & \text{\alt Limitazione Inferiore} & \text{\alt Limitazione Superiore} \\
+        \midrule
+        \( 100\times 100 \) & 0.867 & 1.080 \\
+        \( 250\times 250 \) & 0.867 & 1.462 \\
+        \( 500\times 500 \) & 0.903 & 2.047 \\
+        \( 1000\times 1000 \) & 0.920 & 2.741 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{valori delle limitazioni prodotte da Frank-Wolfe, normalizzati rispetto al valore ottimo fornito dal
+    simplesso, al variare della dimensione delle matrici di riferimento di istanze con sparsità pari a 0.975.}
+    \label{table:firstinfo0.975}
+\end{table}
+
+\noindent
+Il comportamento della limitazione inferiore si inverte quando i valori di sparsità sono molto elevati. In questi casi,
+avere matrici più piccole permette di ottenere limitazioni inferiori di qualità migliore e talvolta di chiudere sul
+valore ottimo, come evidenziato in precedenza.
 
 \subsection{Forma della matrice di riferimento}
-Consideriamo ora istanze caratterizzate da matrici di riferimento che hanno lo stesso numero di elementi ma forma
-diversa, per capire come quest'ultima influenza la qualità delle limitazioni prodotte dall'algoritmo di Frank-Wolfe,
-al variare del valore di sparsità.
-I risultati dell'esperimento sono riassunti dai grafici della Figura
-\ref{fig:byshape_small}, in cui ciascuna riga contiene grafici relativi a istanze caratterizzate da matrici di
-riferimento che hanno lo stesso numero di elementi.
+Adesso che abbiamo capito l’influenza della dimensione delle matrici di riferimento sulla qualità delle limitazioni
+prodotte dall’algoritmo di Frank-Wolfe, possiamo ripetere gli esperimenti per capire l’impatto della forma della matrice
+di riferimento. In particolare, vogliamo capire cosa succede quando il numero delle righe e delle colonne è sbilanciato
+da una parte o dall’altra, come accade nella maggior parte delle istanze di problemi di set-covering.
 
-Notiamo che la forma della matrice di riferimento influenza la qualità delle limitazioni prodotte dall'esecuzione
-dell'algoritmo. In particolare, la limitazione superiore peggiora all'aumentare del numero di variabili di un'istanza,
-quando la sparsità è il numero degli elementi rimane costante, e migliora, per una dimensione fissata della matrice di
-riferimento,
-all'aumentare della sparsità.
-L'andamento della limitazione inferiore è invece più irregolare. Ad esempio, per le
-istanze caratterizzate da matrici \( 100\times 100 \) e \( 200\times 50 \) i risultati sperimentali evidenziano che
-per valori di sparsità più bassi, le limitazioni inferiori sono migliori per le istanze con un numero maggiore di
-variabili. Quando invece i valori di sparsità sono più elevati, sono le istanze caratterizzate dal minor numero di variabili
-ad ottenere le limitazioni inferiori migliori. Lo stesso vale per le istanze con matrici \( 100\times 50
-\) e  \( 200\times 25 \), ma non per le istanze di dimensione maggiore, caratterizzate da matrici \( 1000\times 1000 \)
-e  \( 2000\times 500 \). Per queste ultime, le limitazioni inferiori migliori sono sempre quelle delle istanze in cui il
-numero delle variabili è maggiore.
-\begin{figure}[!ht]
+In primo luogo consideriamo matrici di forma differente ma caratterizzate dallo stesso numero di elementi.
+
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{assets/figures/byshape.pdf}
-    \caption{qualità delle limitazioni prodotte dall'algoritmo di Frank-Wolfe per istanze con matrici di riferimento
-    caratterizzate dallo stesso numero di elementi, al variare della sparsità e del numero di variabili.}
-    \label{fig:byshape_small}
+    \includegraphics[width=\textwidth]{assets/figures/shape1.pdf}
+    \caption{qualità delle limitazioni prodotte dall’algoritmo di Frank-Wolfe al variare della sparsità e della forma
+    della matrice di riferimento di istanze piccole e medie.}
+    \label{fig:shape1}
 \end{figure}
 
-Infine, consideriamo le istanze che hanno lo stesso numero di variabili ma un numero differente di vincoli. I risultati
-ottenuti sono quelli della Figura \ref{fig:byshape2}, in cui ciascuna riga rappresenta istanze con lo stesso numero di
-variabili.
+\noindent
+I grafici della figura \ref{fig:shape1} mostrano, in ciascuna riga, i risultati ottenuti sperimentalmente dall’esecuzione
+dell’algoritmo di Frank-Wolfe su istanze con matrici che hanno lo stesso numero di elementi ma forma differente. Prese
+singolarmente, le istanze si comportano come discusso in precedenza: l’aumento della sparsità è indicatore di un
+miglioramento della limitazione superiore ma non di quella inferiore, che ha invece un comportamento più irregolare.
 
-Osserviamo che, a parità di sparsità, l'aumento nel numero dei vincoli determina un peggioramento della
-limitazione superiore. Ancora una volta, l'andamento della limitazione inferiore è irregolare al variare della sparsità.
+Osserviamo che, a parità di sparsità, la forma della matrice influenza i risultati ot- tenuti. In particolare, quando il
+numero degli elementi rimane costante si ottengono le limitazioni superiori migliori per le istanze che hanno un numero
+di variabili inferiore. Questo risultato è tanto più marcato tanto più sono piccole le istanze che si considerano, come
+evidenziato dai risultati della figura \ref{fig:shape2}, relativi a matrici di dimensione maggiore.
 
-Se confrontiamo i risultati di questo esperimento con quelli ottenuti in precedenza, notiamo che la qualità della
-limitazione inferiore non dipende tanto dal numero di variabili o dal numero di vincoli dell'istanza, ma quanto più dal
-bilanciamento di questi parametri. Quando il numero delle righe e delle colonne è bilanciato, l'algoritmo di Frank-Wolfe
-individua limitazioni inferiori migliori rispetto a situazioni in cui
-ci sono molti più vincoli che variabili. Ad esempio, per matrici \( 100\times 100 \) il valore della limitazione
-inferiore è mediamente migliore, a parità di sparsità, di quello ottenuto per matrici  \( 500\times 100 \), che a sua volta è migliore del
-valore ottenuto per matrici  \( 1000\times 100 \).
-\begin{figure}[!ht]
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{assets/figures/byshape_2.pdf}
-    \caption{qualità delle limitazioni prodotte dall'algoritmo di Frank-Wolfe per istanze con lo stesso numero di
-    variabili, al variare della sparsità e del numero di vincoli.}
-    \label{fig:byshape2}
+    \includegraphics[width=\textwidth]{assets/figures/shape2.pdf}
+    \caption{qualità delle limitazioni prodotte dall’algoritmo di Frank-Wolfe al variare della sparsità e della forma
+    della matrice di riferimento di istanze grandi.}
+    \label{fig:shape2}
 \end{figure}
 
+\noindent
+Notiamo in questo caso che il comportamento è sempre lo stesso, ma solo per valori di sparsità più elevati. In effetti,
+per le matrici 1250 × 400 e 800 × 625 si verifica per sparsità maggiori uguali a 0.950, ma non per valori inferiori, che
+individuano un comportamento opposto. Allo stesso modo, per matrici 2500 × 2000 e 5000 × 1000, che sono ancora più
+grandi, è necessario avere una sparsità di 0.975 o superiore.
 
-\end{document}
+Le limitazioni inferiori sembrano comportarsi in modo opposto. In particolare, si ottengono le limitazioni migliori per
+matrici 800 × 625 rispetto a matrici 1250 × 400, a prescindere dalla sparsità. Lo stesso vale per le matrici 2500 ×
+2000, che producono limitazioni inferiori migliori rispetto a quanto ottenuto con matrici 5000 × 1000, ma solo quando la
+sparsità e inferiore o uguale a 0.995.
 
-\subsection{Istanze di taglia piccola}
-La classe di istanze di taglia piccola è caratterizzata da matrici di riferimento che hanno al massimo $10\,000$
-elementi.
-Come riferimento per la dimensione e la sparsità di questo tipo di istanze, utilizzeremo i valori riportati
-nella tabella \ref{table:small_info}.
+In realtà, il comportamento delle limitazioni inferiori sembra dipendere da un altro fattore e non dal numero degli
+elementi della matrice. Le limitazioni inferiori non sembra- no dipendere tanto dal numero di elementi o di variabili,
+ma piuttosto dal bilanciamento delle matrici. Non è tanto avere un minor numero di variabili che migliora la limitazione
+inferiore, ma quanto più avere un numero di variabili che sia bilanciato rispetto al numero dei vincoli. In altre
+parole, sperimentalmente si osserva che la qualità delle limitazioni inferiori prodotte dall’algoritmo di Frank-Wolfe è
+migliore per le istanze caratterizzate da matrici di riferimento bilanciate, relativamente al numero delle righe e delle
+colonne. In effetti, sperimentando ulteriormente si ottengono i risultati della figura \ref{fig:morevars}
 
-\begin{table}[ht]
+
+\begin{figure}[ht]
     \centering
-    \begin{tabularx}{268.76292pt}{ccc}
+    \includegraphics[width=\textwidth]{assets/figures/shape_more_vars.pdf}
+    \caption{qualità delle limitazioni prodotte dall'algoritmo di Frank-Wolfe al variare della sparsità e della forma
+    della matrice di riferimento.}
+    \label{fig:morevars}
+\end{figure}
+
+\noindent
+Osserviamo che la limitazione superiore si comporta come argomentato in precedenza, migliorando, a parità di sparsità,
+per matrici con un numero minore di variabili. La limitazione inferiore invece si comporta diversamente e conferma
+quanto ipotizzato, tanto che la qualità è maggiore per le matrici 1000 × 500 quando la sparsità è inferiore o uguale a
+0.975. In aggiunta, se confrontiamo i risultati appena ottenuti con quelli della figura 4.1, notiamo che per matrici
+1000 × 1000 le limitazioni inferiori sono ancora migliori, a conferma di quanto detto, come evidenziato anche dai dati
+riportati per completezza nelle tabelle che seguono.
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabularx}{300.75005pt}{ccc}
         \toprule
-        \text{\alt Righe} & \text{\alt Colonne} & \text{\alt Sparsità} \\
+        \text{\alt Dimensione} & \text{\alt Limitazione Inferiore} & \text{\alt Limitazione Superiore} \\
         \midrule
-        100 & 10 & 0.800 \vphantom{|} 0.825 \vphantom{|} 0.850 \vphantom{|} 0.875 \vphantom{|} 0.900 \\
-        100 & 50 & 0.850 \vphantom{|} 0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \\
-        100 & 100 & 0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \\
+        \( 1000\times 100 \) & 0.715 & 1.788 \\
+        \( 1000\times 500 \) & 0.898 & 3.177 \\
         \bottomrule
     \end{tabularx}
-    \caption{Dimensione e sparsità delle matrici di riferimento per istanze di taglia piccola.}
-    \label{table:small_info}
+    \caption{valori delle limitazioni prodotte da Frank-Wolfe, normalizzati rispetto al valore ottimo fornito dal
+    simplesso, al variare della forma delle matrici di riferimento di istanze con sparsità pari a 0.925.}
+    \label{table:moreinfo0.925}
 \end{table}
 
-\subsection{Istanze di taglia media}
-La classe di istanze di taglia media è caratterizzata da matrici di riferimento che hanno un numero di elementi compreso
-tra \( 10\,000 \) e \( 1\,000\,000 \).
-Come riferimento per la dimensione e la sparsità di questo tipo di istanze, utilizzeremo i valori riportati
-nella tabella \ref{table:medium_info}.
-
-\begin{table}[ht]
+\begin{table}[!ht]
     \centering
-    \begin{tabularx}{268.76292pt}{ccc}
+    \begin{tabularx}{304.39664pt}{ccc}
         \toprule
-        \text{\alt Righe} & \text{\alt Colonne} & \text{\alt Sparsità} \\
+        \text{\alt Dimensione} & \text{\alt Limitazione Inferiore} & \text{\alt Limitazione Superiore} \\
         \midrule
-        500 & 100 & 0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \\
-        1000 & 100 &  0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \\
-        1000 & 1000 & 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \vphantom{|} 0.995 \vphantom{|} 0.999 \\
+        \( 1250\times 400 \) & 0.853 & 2.874 \\
+        \( 800\times 625 \) & 0.912 & 2.884 \\
+        \( 1000\times 100 \) & 0.693 & 1.387 \\
+        \( 1000\times 500 \) & 0.887 & 2.907 \\
+        \( 5000\times 1000 \) & 0.869 & 4.275 \\
+        \( 2500\times 2000 \) & 0.939 & 4.173 \\
         \bottomrule
     \end{tabularx}
-    \caption{Dimensione e sparsità delle matrici di riferimento per istanze di taglia media.}
-    \label{table:medium_info}
+    \caption{valori delle limitazioni prodotte da Frank-Wolfe, normalizzati rispetto al valore ottimo fornito dal
+    simplesso, al variare della forma delle matrici di riferimento di istanze con sparsità pari a 0.95.}
+    \label{table:moreinfo0.95}
 \end{table}
-\subsection{Istanze di taglia grande}
-La classe di istanze di taglia grande è caratterizzata da matrici di riferimento che hanno un numero di elementi
-maggiore di $1\,000\,000$.
-Come riferimento per la dimensione e la sparsità di questo tipo di istanze, utilizzeremo i valori riportati
-nella tabella \ref{table:big_info}.
 
-\begin{table}[ht]
+\begin{table}[!ht]
     \centering
-    \begin{tabularx}{270.85823pt}{ccc}
+    \begin{tabularx}{304.39664pt}{ccc}
         \toprule
-        \text{\alt Righe} & \text{\alt Colonne} & \text{\alt Sparsità} \\
+        \text{\alt Dimensione} & \text{\alt Limitazione Inferiore} & \text{\alt Limitazione Superiore} \\
         \midrule
-        5000 & 1000 & 0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \\
-        10000 & 1000 &  0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \\
-        10000 & 5000 & 0.900 \vphantom{|} 0.925 \vphantom{|} 0.950 \vphantom{|} 0.975 \vphantom{|} 0.990 \\
+        \( 1250\times 400 \) & 0.820 & 2.211 \\
+        \( 800\times 625 \) & 0.897 & 2.377 \\
+        \( 1000\times 100 \) & 0.758 & 1.079 \\
+        \( 1000\times 500 \) & 0.862 & 2.344 \\
+        \( 5000\times 1000 \) & 0.836 & 3.551 \\
+        \( 2500\times 2000 \) & 0.926 & 3.620 \\
         \bottomrule
     \end{tabularx}
-    \caption{Dimensione e sparsità delle matrici di riferimento per istanze di taglia grande.}
-    \label{table:big_info}
+    \caption{valori delle limitazioni prodotte da Frank-Wolfe, normalizzati rispetto al valore ottimo fornito dal
+    simplesso, al variare della forma delle matrici di riferimento di istanze con sparsità pari a 0.975.}
+    \label{table:moreinfo0.975}
 \end{table}
+Fino a questo momento abbiamo considerato matrici di forme differenti ma in tutti i casi il numero delle colonne era
+maggiore uguale al numero delle righe. Questa scelta deriva dal fatto che questa è la condizione più comune per le
+istanze del problema del set-covering, in cui il numero dei vincoli è solitamente dominante rispetto al numero delle
+variabili. Tuttavia ci sono dei contesti e delle applicazioni in cui potrebbe valere il contrario e quindi abbiamo
+effettuato degli esperimenti su matrici in cui il numero delle colonne, ossia il numero di variabili, è maggiore del
+numero delle righe, che rappresentano invece i vincoli. I risultati sono riportati nella figura 4.5.
+
+Osserviamo che, a parità di sparsità e numero di vincoli, l'aumentare del numero di variabili è indicatore di un
+peggioramento nella qualità della limitazione superiore e di un miglioramento nella qualità della limitazione inferiore.
+Se invece consideriamo le matrici che hanno lo stesso numero di variabili accade che, a parità di sparsità, l'aumentare
+del numero dei vincoli determina un peggioramento della qualità di entrambe le limitazioni.
+
+Se confrontiamo i risultati ottenuti con matrici caratterizzate dallo stesso numero di elementi ma forme simmetriche,
+notiamo che le limitazioni inferiori migliori si ottengono per le matrici in cui il numero delle variabili è dominante
+rispetto al numero dei vincoli, come accade ad esempio per le matrici \( 1000\times 500 \) e \( 500\times 1000 \) oppure
+\( 2000\times 500 \) e \( 500\times 2000 \). Per le limitazioni superiori la situazione è diversa e l'andamento sembra
+dipendere molto dalla sparsità. Ad esempio, per le matrici \( 1000\times 500 \) e
+\(
+    500\times 1000
+\)
+la limitazione superiore è migliore quando il numero dei vincoli domina sul numero delle variabili e la sparsità è
+inferiore o uguale a 0.975. Per valori di sparsità maggiore il comportamento è opposto e le limitazioni inferiori
+migliori sono quelle delle matrici in cui è il numero delle variabili a dominare. Lo stesso comportamento si verifica
+per le matrici \( 2000\times 500 \) e  \( 500\times 2000 \), dove la soglia del valore di sparsità è 0.975.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{assets/figures/reverse.pdf}
+    \caption{qualità delle limitazioni prodotte dall'algoritmo di Frank-Wolfe al variare della sparsità e della forma
+    della matrice di riferimento.}
+    \label{fig:reverse}
+\end{figure}
+
+\noindent
+Le tabelle riportate di seguito evidenziano in modo più chiaro i comportamenti appena osservati.
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabularx}{300.75005pt}{ccc}
+        \toprule
+        \text{\alt Dimensione} & \text{\alt Limitazione Inferiore} & \text{\alt Limitazione Superiore} \\
+        \midrule
+        \( 100\times 500 \) & 0.964 & 1.812 \\
+        \( 100\times 1000 \) & 0.976 & 1.927 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{valori delle limitazioni prodotte da Frank-Wolfe, normalizzati rispetto al valore ottimo fornito dal
+    simplesso, al variare della forma delle matrici di riferimento di istanze con sparsità pari a 0.9.}
+    \label{table:lastinfo0.9}
+\end{table}
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabularx}{300.75005pt}{ccc}
+        \toprule
+        \text{\alt Dimensione} & \text{\alt Limitazione Inferiore} & \text{\alt Limitazione Superiore} \\
+        \midrule
+        \( 100\times 500 \) & 0.964 & 1.741 \\
+        \( 100\times 1000 \) & 0.975 & 1.850 \\
+        \( 500\times 1000 \) & 0.954 & 2.915 \\
+        \( 500\times 2000\) & 0.969 & 3.059 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{valori delle limitazioni prodotte da Frank-Wolfe, normalizzati rispetto al valore ottimo fornito dal
+    simplesso, al variare della forma delle matrici di riferimento di istanze con sparsità pari a 0.925.}
+    \label{table:lastinfo0.925}
+\end{table}
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabularx}{300.75005pt}{ccc}
+        \toprule
+        \text{\alt Dimensione} & \text{\alt Limitazione Inferiore} & \text{\alt Limitazione Superiore} \\
+        \midrule
+        \( 100\times 500 \) & 0.960 & 1.580 \\
+        \( 100\times 1000 \) & 0.975 & 1.687 \\
+        \( 500\times 1000 \) & 0.952 & 2.741 \\
+        \( 500\times 2000\) & 0.967 & 2.877 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{valori delle limitazioni prodotte da Frank-Wolfe, normalizzati rispetto al valore ottimo fornito dal
+    simplesso, al variare della forma delle matrici di riferimento di istanze con sparsità pari a 0.95.}
+    \label{table:lastinfo0.95}
+\end{table}
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabularx}{300.75005pt}{ccc}
+        \toprule
+        \text{\alt Dimensione} & \text{\alt Limitazione Inferiore} & \text{\alt Limitazione Superiore} \\
+        \midrule
+        \( 100\times 500 \) & 0.953 & 1.398 \\
+        \( 100\times 1000 \) & 0.971 & 1.482 \\
+        \( 500\times 1000 \) & 0.944 & 2.324 \\
+        \( 500\times 2000\) & 0.964 & 2.496 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{valori delle limitazioni prodotte da Frank-Wolfe, normalizzati rispetto al valore ottimo fornito dal
+    simplesso, al variare della forma delle matrici di riferimento di istanze con sparsità pari a 0.975.}
+    \label{table:lastinfo0.975}
+\end{table}
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabularx}{300.75005pt}{ccc}
+        \toprule
+        \text{\alt Dimensione} & \text{\alt Limitazione Inferiore} & \text{\alt Limitazione Superiore} \\
+        \midrule
+        \( 500\times 1000 \) & 0.925 & 1.739 \\
+        \( 500\times 2000\) & 0.958 & 1.972 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{valori delle limitazioni prodotte da Frank-Wolfe, normalizzati rispetto al valore ottimo fornito dal
+    simplesso, al variare della forma delle matrici di riferimento di istanze con sparsità pari a 0.99.}
+    \label{table:lastinfo0.99}
+\end{table}
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabularx}{300.75005pt}{ccc}
+        \toprule
+        \text{\alt Dimensione} & \text{\alt Limitazione Inferiore} & \text{\alt Limitazione Superiore} \\
+        \midrule
+        \( 500\times 1000 \) & 0.895 & 1.387 \\
+        \( 500\times 2000\) & 0.940 & 1.575 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{valori delle limitazioni prodotte da Frank-Wolfe, normalizzati rispetto al valore ottimo fornito dal
+    simplesso, al variare della forma delle matrici di riferimento di istanze con sparsità pari a 0.995.}
+    \label{table:lastinfo0.995}
+\end{table}
+
+\section{Tempi di esecuzione}
