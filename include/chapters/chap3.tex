@@ -518,7 +518,7 @@ i problemi di set-covering sono caratterizzati da matrici generalmente molto spa
 Procediamo ora con l'esecuzione dei due algoritmi per confrontare la soluzione prodotta dall'algoritmo di Frank-Wolfe
 con il valore ottimo trovato dall'algoritmo del simplesso. In questo esperimento non ci preoccupiamo di
 limitare il numero delle iterazioni, e quindi il tempo di esecuzione di Frank-Wolfe, poiché l'obiettivo è solamente quello
-di determinare la qualità della soluzione prodotta dall'algoritmo di Frank-Wolfe.
+di determinare la qualità della soluzione prodotta.
 
 
 \subsection{Dimensione della matrice di riferimento}
@@ -858,3 +858,59 @@ Le tabelle riportate di seguito evidenziano in modo più chiaro i comportamenti 
 \end{table}
 
 \section{Tempi di esecuzione}
+Gli esperimenti che abbiamo condotto fino a questo punto ci hanno permesso di capire come si comporta l'algoritmo di
+Frank-Wolfe al variare dei parametri che identificano le istanze che abbiamo considerato, come ad esempio la sparsità,
+il numero di elementi e la forma della matrice di riferimento. In particolare, abbiamo cercato di stabilire la qualità
+delle limitazioni prodotte da Frank-Wolfe confrontandole con il valore ottimo ottenuto attraverso l'algoritmo del
+simplesso. Analizzando i risultati che abbiamo ottenuto, siamo riusciti a concludere che la limitazione inferiore e
+quella superiore si comportano diversamente. In particolare, la prima è molto più stabile della seconda, al variare dei
+parametri che abbiamo considerato. In generale, abbiamo ottenuto delle limitazioni ragionevoli che richiedono ora di
+confrontare il tempo impiegato per ottenerle con il tempo necessario a trovare la soluzione ottima con l'algoritmo del
+simplesso. L'obiettivo è quello di capire se l'algoritmo di Frank-Wolfe è in grado di produrre limitazioni di buona
+qualità in un tempo molto ridotto.
+
+In questa sezione analizzeremo i tempi di esecuzione dei due algoritmi, al variare dei parametri che abbiamo
+citato in precedenza. Per l'algoritmo del simplesso considereremo il tempo impiegato a trovare il valore ottimo, mentre
+per l'algoritmo di Frank-Wolfe considereremo il tempo impiegato a compiere un numero di iterazioni fissato. L'idea è
+quella di eseguire l'algoritmo di Frank-Wolfe molteplici volte per capire come il numero di iterazioni influenza le
+limitazioni prodotte. L'obiettivo è quello di trovare un compromesso tra la qualità delle limitazioni prodotte e il
+tempo impiegato per ottenerle, in relazione al tempo necessario per determinare il valore ottimo attraverso l'algoritmo
+del simplesso.
+
+\section{Dimensione della matrice di riferimento}
+Iniziamo analizzando i risultati ottenuti dagli esperimenti svolti su istanze di dimensioni
+differenti, in quanto a numero di elementi della matrice di riferimento, che sono riportati nei grafici della figura
+\ref{fig:timesize}.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth]{assets/figures/timesize.pdf}
+    \caption{tempi di esecuzione dell'algoritmo del simplesso e dell'algoritmo di Frank-Wolfe, al variare della sparsità
+    e della dimensione della matrice di riferimento.}
+    \label{fig:timesize}
+\end{figure}
+
+In primo luogo notiamo che la sparsità della matrice ha un'influenza significativa sul tempo di esecuzione
+dell'algoritmo del simplesso.  In particolare,
+l'aumento della sparsità è indicatore di una diminuzione del tempo di esecuzione.
+Per l'algoritmo di Frank-Wolfe l'effetto è il medesimo, ma è meno marcato.
+Naturalmente
+questo risultato non è una sorpresa, poiché più è sparsa una matrice e minore sarà il numero di operazioni da eseguire.
+
+Per matrici di riferimento abbastanza piccole, i tempi di esecuzione degli algoritmi sono molto bassi e quindi
+c'è poco spazio per le variazioni. Tuttavia, quando la matrice di riferimento è sufficientemente grande, notiamo proprio
+una soglia di sparsità oltre la quale l'algoritmo del simplesso è incredibilmente più veloce. L'andamento dei tempi di
+esecuzione dell'algoritmo Frank-Wolfe è invece molto più stabile.
+
+Se confrontiamo i tempi di esecuzione dei due algoritmi possiamo osservare che per matrici piccole l'algoritmo di
+Frank-Wolfe si comporta molto bene, con tempi di esecuzione ridotti rispetto a quelli dell'algoritmo del
+simplesso, soprattutto per i valori di sparsità più bassi. Per i valori di sparsità più elevati, l'algoritmo di
+Frank-Wolfe rimane competitivo solo quando il numero di iterazioni è ridotto, come accade ad esempio per le matrici \(
+250\times 250 \). Per matrici di dimensione maggiore e valori di sparsità contenuti, il tempo di esecuzione del simplesso aumenta notevolmente, mentre
+quello dell'algoritmo di Frank-Wolfe aumenta in modo meno significativo. Al contrario, valori molto elevati di
+sparsità velocizzano di molto l'esecuzione del simplesso, i cui tempi si abbassano di molto rispetto a quelli
+dell'algoritmo di Frank-Wolfe.
+
+Osserviamo poi che il numero delle iterazioni effettuate dall'algoritmo di Frank-Wolfe ha un influenza significativa sul
+tempo di esecuzione. Per questo motivo, è importante capire quanto migliora la qualità delle limitazioni prodotte,
+all'aumentare del numero di iterazioni.
