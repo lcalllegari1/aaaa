@@ -877,7 +877,7 @@ limitazioni prodotte. L'obiettivo è quello di trovare un compromesso tra la qua
 tempo impiegato per ottenerle, in relazione al tempo necessario per determinare il valore ottimo attraverso l'algoritmo
 del simplesso.
 
-\section{Dimensione della matrice di riferimento}
+\subsection{Dimensione della matrice di riferimento}
 Iniziamo analizzando i risultati ottenuti dagli esperimenti svolti su istanze di dimensioni
 differenti, in quanto a numero di elementi della matrice di riferimento, che sono riportati nei grafici della figura
 \ref{fig:timesize}.
@@ -913,4 +913,77 @@ dell'algoritmo di Frank-Wolfe.
 
 Osserviamo poi che il numero delle iterazioni effettuate dall'algoritmo di Frank-Wolfe ha un influenza significativa sul
 tempo di esecuzione. Per questo motivo, è importante capire quanto migliora la qualità delle limitazioni prodotte,
-all'aumentare del numero di iterazioni.
+all'aumentare del numero di iterazioni. La tabella \ref{table:hugetable} riassume i risultati ottenuti sperimentalmente
+facendo variare il numero di iterazioni dell'algoritmo di Frank-Wolfe. In particolare, osserviamo che quando l'algoritmo
+riesce a chiudere sul valore ottimo con entrambe limitazioni, riesce a farlo con poche iterazioni e, conseguentemente,
+in poco tempo. In questi casi i tempi di esecuzione sono molto bassi e molto migliori di quelli dell'algoritmo del
+simplesso.
+
+In aggiunta notiamo che, per le matrici di dimensione fissata, l'aumento della sparsità riduce il miglioramento della
+qualità delle limitazioni prodotte da Frank-Wolfe che si ottiene aumentando il numero delle iterazioni effettuate.
+
+In tutti i casi, il passaggio da 1000 a 10000 iterazioni determina un miglioramento trascurabile rispetto al passaggio
+da 100 a 1000, soprattuto per le limitazioni inferiori delle matrici più piccole. Tuttavia, si osserva sperimentalmente
+che il tempo di esecuzione cresce linearmente con il numero delle iterazioni. Di conseguenza, un elevato numero di
+iterazioni ha senso solo per matrici sufficientemente grandi e con valori di sparsità contenuti, per le quali anche
+l'algoritmo del simplesso richiede molto tempo. Per le matrici più piccole o quando i valori di sparsità sono molto
+elevati, spesso non è conveniente effettuare 10000 iterazioni poichè il miglioramento della qualità delle limitazioni è
+trascurabile.
+
+Infine osserviamo che il tempo impiegato dall'algoritmo di Frank-Wolfe aumenta linearmente con il numero delle
+iterazioni effettuate, indipendentemente dalla dimensione della matrice o dalla sparsità.  Inoltre, l'aumento del numero
+di iterazioni dell'algoritmo di Frank-Wolfe ha un impatto molto più significativo sulle limitazioni superiori piuttosto
+che su quelle inferiori. Al contrario, l'esecuzione dell'algoritmo del simplesso dipende molto dalla dimensione e dalla
+sparsità della matrice di riferimento associata alle istanze che abbiamo utilizzato per gli esperimenti.
+
+\begin{landscape}
+\begin{table}[!h]
+    \centering
+    \vspace*{30pt}
+    \begin{tabularx}{665.19638pt}{cccccccccccc}
+        \toprule
+        & &  \multicolumn{3}{c}{\text{\alt Limitazione Inferiore}} & \multicolumn{3}{c}{\text{\alt Limitazione
+Superiore}} & \multicolumn{3}{c}{\text{\alt Tempo Frank-Wolfe (ms)}}\\
+        \cmidrule(lr){3-5}
+        \cmidrule(lr){6-8}
+        \cmidrule(lr){9-11}
+        \text{\alt Matrice} & \text{\alt Sparsità} & \text{\alt 100} & \text{\alt 1000} & \text{\alt 10000} & \text{\alt 100} & \text{\alt 1000} &
+        \text{\alt 10000} &
+        \text{\alt 100} & \text{\alt 1000} & \text{\alt 10000} & \text{\alt Tempo Simplesso (ms)} \\
+        \midrule
+        \( 100\times 100 \)
+        & 0.900 & 0.8576 & 0.8865 & 0.8879 & 1.9539 & 1.6905 & 1.5373 & 0.1361 & 1.2024 & 11.6732 & 6.4107 \\
+        & 0.925 & 0.8576 & 0.8770 & 0.8791 & 1.7043 & 1.5328 & 1.4383 & 0.1225 & 1.0606 & 10.2862 & 5.3249 \\
+        & 0.950 & 0.8409 & 0.8542 & 0.8554 & 1.4336 & 1.3292 & 1.2457 & 0.1098 & 0.9214 & 8.9731 & 3.8551 \\
+        & 0.975 & 0.8598 & 0.8662 & 0.8666 & 1.1801 & 1.1163 & 1.1004 & 0.0880 & 0.7726 & 7.5559 & 1.7747 \\
+        & 0.990 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 0.0574 & 0.5323 & 5.0913 & 0.6971 \\
+        \midrule
+        \( 250\times 250 \)
+        & 0.900 & 0.8581 & 0.9096 & 0.9158 & 2.9567 & 2.4843 & 2.3332 & 0.7376 & 6.2793 & 55.9291 & 75.1152 \\
+        & 0.950 & 0.8618 & 0.8948 & 0.8985 & 2.2658 & 2.0222 & 1.9267 & 0.3853 & 3.4301 & 32.2335 & 51.4708 \\
+        & 0.975 & 0.8483 & 0.8657 & 0.8673 & 1.7121 & 1.5571 & 1.5112 & 0.2968 & 2.5420 & 24.4083 & 25.4179 \\
+        & 0.990 & 0.8541 & 0.8601 & 0.8606 & 1.2323 & 1.1907 & 1.1579 & 0.2333 & 1.9958 & 18.9113 & 2.5394 \\
+        & 0.995 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 0.1462 & 1.3031 & 12.4242 & 1.2011 \\
+        \midrule
+        \( 500\times 500 \)
+        & 0.900 & 0.8400 & 0.9204 & 0.9299 & 3.7099 & 3.2344 & 3.0214 & 2.2067 & 20.5444 & 198.6950 & 1048.5477 \\
+        & 0.950 & 0.8538 & 0.9127 & 0.9191 & 3.1156 & 2.7492 & 2.6017 & 1.4827 & 13.4749 & 121.3727 & 724.4617 \\
+        & 0.975 & 0.8648 & 0.8989 & 0.9027 & 2.3895 & 2.1962 & 2.1019 & 0.8559 & 7.5704 & 67.7478 & 456.2471 \\
+        & 0.990 & 0.8434 & 0.8579 & 0.8594 & 1.6196 & 1.5337 & 1.4915 & 0.6744 & 4.0800 & 46.5179 & 90.1103 \\
+        & 0.995 & 0.8531 & 0.8595 & 0.8602 & 1.2834 & 1.2430 & 1.2142 & 0.4950 & 4.2763 & 38.8078 & 3.5712 \\
+        \midrule
+        \( 1000\times 1000 \)
+        & 0.950 & 0.8346 & 0.9215 & 0.9312 & 3.8963 & 3.5183 & 3.3231 & 4.4801 & 41.5427 & 396.8238 & 3142.2952 \\
+        & 0.975 & 0.8553 & 0.9131 & 0.9195 & 3.2182 & 2.9260 & 2.8220 & 3.0410 & 28.8782 & 264.5643 & 2125.8350 \\
+        & 0.990 & 0.8621 & 0.8925 & 0.8957 & 2.2202 & 2.0965 & 2.0417 & 1.8980 & 17.1971 & 158.7026 & 975.0234 \\
+        & 0.995 & 0.8429 & 0.8571 & 0.8585 & 1.6542 & 1.5738 & 1.5479 & 1.3779 & 12.2042 & 111.4531 & 489.7301 \\
+        & 0.999 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 0.6364 & 5.7191 & 51.2325 & 3.6620 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{qualità delle limitazioni (valori normalizzati rispetto all'ottimo ottenuto con l'algoritmo del simplesso)
+    di Frank-Wolfe e tempo di esecuzione impiegato per ottenerle, al variare del numero di iterazioni.}
+    \label{table:hugetable}
+\end{table}
+\end{landscape}
+
+\subsection{Forma della matrice di riferimento}
