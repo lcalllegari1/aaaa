@@ -6,8 +6,9 @@ dell'algoritmo del simplesso e dell'algoritmo di Frank-Wolfe su istanze del rila
 Per valutare l'efficienza e l'applicabilità dell'algoritmo di Frank-Wolfe abbiamo effettuato varie prove sperimentali su
 numerose istanze, variando la dimensione e la sparsità della matrice di riferimento. Inoltre, per ogni coppia di valori
 che identificano dimensione e sparsità abbiamo ripetuto gli esperimenti su molteplici istanze, con l'obiettivo di
-ottenere risultati più accurati. Infine abbiamo calcolato la media e la deviazione standard di questi risultati, in modo
-da poterli riassumere utilizzando opportuni grafici.
+ottenere risultati più accurati. In particolare, abbiamo utilizzato 20 istanze differenti dello stesso
+tipo, in quanto a dimensione e sparsità della matrice di riferimento, e abbiamo calcolato media e deviazione standard dei
+risultati ottenuti, in modo da poterli riassumere utilizzando opportuni grafici.
 
 Inizialmente abbiamo condotto degli esperimenti per studiare la qualità della soluzione prodotta dall'algoritmo di
 Frank-Wolfe, confrontandola con il valore ottimo ottenuto attraverso l'algoritmo del simplesso.
@@ -19,7 +20,14 @@ un tempo molto ridotto.
 Nello svolgimento degli esperimenti abbiamo scelto valori di sparsità particolarmente alti, in accordo con il fatto che
 i problemi di set-covering sono caratterizzati da matrici generalmente molto sparse.
 
-\newpage
+
+\subsection{Specifiche tecniche}
+Per compilare il codice sorgente in linguaggio C abbiamo utilizzato gcc 13.2.0 e per eseguire il codice Python abbiamo
+utilizzato Python 3.11.7.
+
+Tutti gli esperimenti sono stati eseguiti sulla stessa macchina, utilizzando un processore Intel(R) Core(TM)
+i7-1165G7@2.80GHz e 16 GB di memoria RAM sul sistema operativo Ubuntu 23.10.
+
 \section{Qualità delle soluzioni}
 Procediamo ora con l'esecuzione dei due algoritmi per confrontare le limitazioni prodotte dall'algoritmo di Frank-Wolfe
 con il valore ottimo trovato dall'algoritmo del simplesso. In questo esperimento non ci preoccupiamo di
