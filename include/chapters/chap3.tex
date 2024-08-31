@@ -1,9 +1,6 @@
 \chapter{Implementazione}
 L'obiettivo di questo capitolo è sviluppare l'implementazione di un algoritmo risolutivo per il rilassamento lineare del
 set-covering, basato sul metodo di Frank-Wolfe.
-Inoltre, presenteremo anche il codice
-necessario a risolvere le istanze del problema con l'algoritmo del simplesso, che verrà usato per operare un confronto
-nel prossimo capitolo.
 
 \section{Generazione delle istanze}
 Come anticipato in \ref{sec:refmat}, la formulazione \eqref{eq:scplr} ci permette di identificare un'istanza per il
@@ -14,6 +11,7 @@ riportato il codice che genera matrici binarie di riferimento.
 \begin{lstlisting}[language=python, style = style, caption={Generazione delle matrici binarie di riferimento.}, label =
 {lst:genmat}]
 import numpy as np
+from scipy.sparse import csr_matrix
 
 def generate_matrix(rows, cols, sparsity):
     nnz = int(round((1 - sparsity) * rows * cols))
@@ -21,6 +19,7 @@ def generate_matrix(rows, cols, sparsity):
 
     for r in range(rows):
         matrix[r, np.random.choice(cols)] = 1
+
     nc = np.where(matrix.sum(axis=0) == 0)[0]
     for c in nc:
         matrix[np.random.choice(rows), c] = 1
@@ -475,14 +474,75 @@ void update_upper_bound(double * const upper_bound, double objective,
 \end{code}
 
 \subsection{Composizione dell'algoritmo risolutivo}
-Finalmente possiamo mettere insieme tutti i pezzi e comporre l'algoritmo risolutivo.
+Finalmente possiamo mettere insieme tutti i pezzi e comporre l'algoritmo risolutivo, che viene riportato nel frammento
+di codice che segue.
+
 \begin{code}{adjusted title = {\cicon\ solver.c}}
 \begin{lstlisting}[language=c, style = style, caption={Implementazione dell'algoritmo risolutivo.}]
-Pls don't give up now
+void solve(int K) {
+    double u[m], objective, lower_bound = 0, upper_bound = 1e9;
+    int s[m]; uint8_t d[m], x[n];
+
+    starting_u(u);
+    for (int k = 0; k < K; k++) {
+        objective = L(u, x);
+        subgradient(x, s);
+        argmax(s, d);
+        update_lower_bound(&lower_bound, objective);
+        update_upper_bound(&upper_bound, objective, s, d, u);
+        next_u(u, d, 2 / ((double) k + 2));
+    }
+}
 \end{lstlisting}
 \end{code}
-\newpage
+
+\noindent
+La funzione {\jbm solve} esegue l'algoritmo di Frank-Wolfe per il numero {\jbm K} di iterazioni che viene specificato
+come parametro di ingresso.
 
 \section{Esecuzione}
 
-\subsection{Output}
+In questa sezione riportiamo i dettagli tecnici e le informazioni necessarie per eseguire il codice che abbiamo
+presentato fino a questo punto.
+
+\subsection{Generazione delle istanze}
+Per la generazione delle istanze, utilizziamo {\jbm datagen.py}. Per generare {\jbm count} istanze caraterizzate da
+matrici di riferimento con {\jbm m} righe e {\jbm n} colonne e una sparsità pari a {\jbm sparsity}, utilizziamo il
+comando riportato di seguito.
+
+\begin{inline}
+\begin{lstlisting}[style=style2]
+%\scalebox{0.7}{\faDollarSign}% python3 datagen.py <count> <m> <n> <sparsity>
+\end{lstlisting}
+\end{inline}
+
+\subsection{Esecuzione algoritmo del simplesso}
+Per risolvere un'istanza con l'algoritmo del simplesso, è sufficiente specificare il percorso che identifica il file
+{\jbm csr\_matrix.dat} associato. In particolare, utilizziamo il comando riportato di seguito.
+\begin{inline}
+\begin{lstlisting}[style=style2]
+%\scalebox{0.7}{\faDollarSign}% python3 solver.py <path/to/csr_matrix.dat>
+\end{lstlisting}
+\end{inline}
+\noindent
+Il percorso specificato è relativo alla cartella che contiene il sorgente {\jbm solver.py}.
+
+\subsection{Esecuzione algoritmo di Frank-Wolfe}
+Per risolvere un'istanza con l'algoritmo di Frank-Wolfe, è sufficiente specificare il percorso che identifica il file
+{\jbm csr\_matrix.dat} associato e il numero di iterazioni da effettuare. In particolare, utilizziamo il comando
+\begin{inline}
+\begin{lstlisting}[style=style2]
+%\scalebox{0.7}{\faDollarSign}% gcc solver.c -o solver -Ofast
+\end{lstlisting}
+\end{inline}
+
+\noindent
+per compilare il codice sorgente dell'algoritmo e il comando
+\begin{inline}
+\begin{lstlisting}[style=style2]
+%\scalebox{0.7}{\faDollarSign}% ./solver <path/to/csr_matrix.dat> <K>
+\end{lstlisting}
+\end{inline}
+\noindent
+per eseguire l'algoritmo.
+Il percorso specificato è relativo alla cartella che contiene il sorgente {\jbm solver.c}.
