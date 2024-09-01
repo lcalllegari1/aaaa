@@ -791,4 +791,35 @@ compensare la differenza di qualità in poche iterazioni.
 \end{figure}
 
 \section{Conclusioni}
-hello
+In questo lavoro siamo partiti dalla formulazione del problema del set-covering e abbiamo utilizzato l'idea alla base
+del metodo di Frank-Wolfe per sviluppare l'implementazione di un algoritmo risolutivo per il rilassamento lineare.
+L'obiettivo era quello di ottenere delle limitazioni ragionevoli al valore ottimo in un tempo molto ridotto. Abbiamo
+utilizzato l'algoritmo del simplesso per ottenere le soluzioni ottime da utilizzare come riferimento per misurare la
+qualità delle limitazioni prodotte da Frank-Wolfe e abbiamo operato un confronto sui tempi di esecuzione per
+valutare la competitività dell'algoritmo che abbiamo implementato.
+
+L'implementazione dell'algoritmo risolutivo è realizzata in linguaggio C e sfrutta la rappresentazione CSR per
+identificare la matrice binaria di riferimento di un'istanza senza la necessità di memorizzarla per intero.
+
+Le numerose prove sperimentali che abbiamo svolto ci hanno permesso di ottenere risultati da utilizzare per analizzare
+il comportamento dell'algoritmo di Frank-Wolfe e confrontarlo con l'algoritmo del simplesso. Per ottenere risultati
+completi abbiamo ripetuto gli esperimenti variando tutti i parametri che caratterizzano le istanze del problema, come
+numero di elementi, sparsità e forma della matrice di riferimento. Per ottenere risultati accurati, abbiamo ripetuto gli
+esperimenti su molteplici istanze dello stesso tipo.
+
+Analizzando i risultati sperimentali relativi alla qualità delle limitazioni prodotte dall'algoritmo di Frank-Wolfe
+abbiamo capito che parametri come sparsità e forma della matrice di riferimento hanno un'influenza significativa. Le
+limitazioni prodotte da Frank-Wolfe sono abbastanza buone in generale, con qualche eccezione per matrici caratterizzate
+da valori particolari per i parametri che abbiamo considerato. Inoltre, le limitazioni inferiori sono generalmente più
+stabili di quelle superiori quando variano i parametri.
+
+I risultati relativamente ai tempi di esecuzione dell'algoritmo di Frank-Wolfe, che abbiamo confrontato con i tempi di
+esecuzione dell'algoritmo del simplesso, hanno evidenziato la competitività di Frank-Wolfe nella maggior parte delle
+situazioni, soprattutto per matrici meno sparse, con cui l'algoritmo del simplesso fa più fatica. Per le istanze
+caratterizzate da matrici di riferimento molto sparse, l'algoritmo di Frank-Wolfe è competitivo solo quando il numero
+delle iterazioni è molto ridotto. Tuttavia, questo non sembra avere effetti troppo negativi sulla qualità delle
+limitazioni prodotte. In effetti, l'analisi dell'esecuzione dell'algoritmo di Frank-Wolfe ha evidenziato che le prime
+100 iterazioni sono molto più importanti di quelle successive, nelle quali il miglioramento delle limitazioni è
+trascurabile, soprattutto per le limitazioni inferiori delle matrici più piccole. Utilizzare un numero elevato di
+iterazioni ha senso solo quando le matrici sono particolarmente grandi oppure quando sono caratterizzate da un valore di
+sparsità abbastanza basso.
