@@ -731,9 +731,39 @@ Superiore}} & \multicolumn{3}{c}{\text{\alt Tempo Frank-Wolfe (ms)}}\\
 \end{landscape}
 
 \section{Convergenza dell'algoritmo di Frank-Wolfe}
+Concludiamo l'analisi dell'algoritmo di Frank-Wolfe studiando l'esecuzione più in dettaglio. In particolare, vogliamo
+capire come cambia la qualità delle limitazioni prodotte nelle varie iterazioni quando facciamo variare i parametri che
+identificano le istanze.
 
 \subsection{Dimensione della matrice di riferimento}
+I grafici della Figura \ref{fig:size_lineplot} mostrano l'andamento delle limitazioni prodotte da Frank-Wolfe in
+funzione del numero delle iterazioni effettuate, al variare del numero di elementi della matrice di riferimento delle
+istanze.
+
+Osserviamo che l'andamento delle limitazioni prodotte è lo stesso per tutte le istanze che abbiamo considerato, a
+prescindere dalla dimensione della matrice di riferimento. In particolare, in tutti i casi l'algoritmo ha una fase
+iniziale in cui le limitazioni prodotte sono pessime, seguita da un rapido miglioramento della qualità di quest'ultime.
+Infine, le limitazioni si stabilizzano e l'aumento del numero delle iterazioni non è più un fattore così determinante
+per la qualità, che migliora molto lentamente.
+
+Per matrici di dimensione fissata, l'aumentare del valore di sparsità è indicatore di un minor numero di iterazioni richiesto
+per raggiungere la fase di rapido miglioramento della qualità delle limitazioni prodotte.
+
+L'aumentare della dimensione della matrice di riferimento, a parità di numero delle iterazioni, è indicatore di un
+peggioramento nella qualità delle limitazioni prodotte. In altre parole, matrici più grandi richiedono un numero di
+iterazioni maggiore per produrre limitazioni di buona qualità rispetto alle matrici più piccole.
+
 \subsection{Forma della matrice di riferimento}
+I grafici della Figura \ref{fig:shape_lineplot} mostrano l'andamento delle limitazioni prodotte da Frank-Wolfe in
+funzione del numero delle iterazioni effettuate, al variare della forma della matrice di riferimento delle istanze.
+
+Notiamo ancora una volta che la forma influenza notevolmente l'esecuzione dell'algoritmo. Ad esempio, le matrici \(
+1000\times 100 \) producono limitazioni inferiori peggiori rispetto alle matrici \( 100\times 1000 \) e richiedono anche
+un numero di iterazioni maggiore. Lo stesso vale per le matrici \( 2000\times 500 \) e \( 500\times 2000 \). Per le
+limitazioni superiori la situazione è differente. Le istanze caratterizzate da un numero di variabili dominante rispetto
+al numero dei vincoli producono, nelle prime iterazioni, limitazioni superiori molto più alte rispetto alle istanze in
+cui è il numero dei vincoli a dominare. Tuttavia, la fase di miglioramento è più marcata e questo permette di
+compensare la differenza di qualità in poche iterazioni.
 
 \clearpage
 \begin{center}
@@ -761,3 +791,4 @@ Superiore}} & \multicolumn{3}{c}{\text{\alt Tempo Frank-Wolfe (ms)}}\\
 \end{figure}
 
 \section{Conclusioni}
+hello
