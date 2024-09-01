@@ -37,7 +37,7 @@ def generate_matrix(rows, cols, sparsity):
 \end{lstlisting}
 \end{code}
 \noindent
-La funzione appena presentata sfrutta gli strumenti della libreria numpy per generare una matrice binaria con un numero
+La funzione appena presentata sfrutta gli strumenti della libreria numpy [4] per generare una matrice binaria con un numero
 di righe e di colonne che è specificato dai parametri {\jbm rows} e {\jbm cols}, rispettivamente, in cui sparsità è
 determinata dal parametro {\jbm sparsity}.
 
@@ -59,12 +59,12 @@ Per ciascuna istanza di un dataset viene generato il file {\jbm csr\_matrix.dat}
 della matrice di riferimento e della sua trasposta, insieme alle informazioni riguardo il numero di righe, il numero di
 colonne e il numero degli elementi non nulli. Tale file verrà utilizzato come parametro di input per l'algoritmo del
 simplesso e l'algoritmo di Frank-Wolfe. Per ottenere la rappresentazione CSR delle matrici binarie di riferimento delle
-istanze abbiamo utilizzato il modulo sparse della libreria scipy.
+istanze abbiamo utilizzato il modulo sparse della libreria scipy [5].
 
 
 \section{Algoritmo del simplesso}
 Iniziamo a presentare il codice necessario a risolvere le istanze con l'algoritmo del simplesso. Utilizzeremo
-l'interfaccia pyscipopt per accedere all'implementazione SCIP dell'algoritmo del simplesso. Le componenti necessarie
+l'interfaccia pyscipopt [7] per accedere all'implementazione SCIP dell'algoritmo del simplesso. Le componenti necessarie
 sono quelle importate di seguito.
 
 \begin{inline}
