@@ -289,7 +289,8 @@ concetti, che vengono presentati di seguito.
 La definizione può essere generalizzata per un numero finito di punti \( x_1,\ldots, x_k \) in \( \mathcal{C} \),
 utilizzando la combinazione lineare convessa
 \begin{equation}
-    \sum_{i = 1}^k \lambda_i\, x_i\,, \quad \sum_{i = 1}^k \lambda_i = 1\,.
+    \sum_{i = 1}^k \lambda_i\, x_i\,, \quad \sum_{i = 1}^k \lambda_i = 1\,, \quad \lambda_i \geq 0 \quad \forall i\colon
+    1 \leq i \leq k.
 \end{equation}
 
 Esempi di insiemi convessi sono gli iperpiani \( \{\vec{x} \in \mathbb{R}^n \mid \vec{a}^{\tr} \vec{x} = a_0\} \) e i
@@ -376,7 +377,7 @@ dove $\vec{x} \in \mathbb{R}^n$, con $\vec{c} \in \mathbb{R}^n,\ \vec{A} \in \ma
 \mathbb{R}^m$. Supponiamo che \( \vec{x^{\star}} \) sia la soluzione ottima candidata. Per certificare l'ottimalità
 dobbiamo dimostrare che non esistono soluzioni migliori. Nel caso di un problema di minimo, questo significa verificare
 che \( \vec{x^{\star}} \) è la soluzione di costo minimo, ossia che \( f(\vec{x^{\star}}) \leq f(\vec{x}) \) per ogni \(
-x \in F(\mathcal{P}) \).
+\vec{x} \in F(\mathcal{P}) \).
 
 Per la generica soluzione ammissibile \( \vec{x} \in F(\mathcal{P}) \) vale \( \vec{A}\vec{x} \geq \vec{b} \). Allora,
 introducendo un vettore \( \vec{u} \in \mathbb{R}^m, \vec{u} \geq 0 \), chiamato vettore di moltiplicatori, risulta che
@@ -606,7 +607,7 @@ L'algoritmo di Frank-Wolfe si sviluppa come segue.
         \vec{x}_k \) e \( \vec{d}_k \), per determinare il punto \( \vec{x}_{k+1} \) da utilizzare nell'iterazione
         successiva. Ad esempio, in questo lavoro useremo \( \gamma = \frac{2}{k+2} \) per calcolare
         \[
-            \vec{x}_{k+1} = (1 - \gamma)\vec{x}_k + \gamma\vec{d}\,.
+            \vec{x}_{k+1} = (1 - \gamma)\vec{x}_k + \gamma\vec{d}_k\,.
         \]
 \end{itemize}
 Notiamo che per come è definito, il generico punto \( \vec{x}_{k+1} \) calcolato al termine dell'iterazione \( k \) è
@@ -647,5 +648,5 @@ I passi dell'algoritmo di Frank-Wolfe sono riassunti nella specifica ad alto liv
 \end{algorithm}
 \end{tcolorbox}
 \noindent
-Naturalmente un'implementazione dell'algoritmo deve impostare una condizione di terminazione, che impedisca
+Naturalmente un'implementazione dell'algoritmo deve impostare una condizione di terminazione che impedisca
 all'algoritmo di iterare in maniera indefinita.

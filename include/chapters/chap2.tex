@@ -175,7 +175,7 @@ che può essere risolto scegliendo \( x_j = 1\) se e solo se
 \begin{equation}
     \sum_{i=1}^m a_{ij}\, u_i > 1
 \end{equation}
-per ogni \( 1 \leq j \leq n \) e che fornisce, al variare di \( \vec{u} \in \mathbb{R}^n \), un limite inferiore al valore della funzione
+per ogni \( 1 \leq j \leq n \) e che fornisce, al variare di \( \vec{u} \in \mathbb{R}^m \), un limite inferiore al valore della funzione
 obiettivo. A questo punto, possiamo definire il problema duale Lagrangiano
 \begin{equation}\label{eq:lagrangianduale}
     \max_{\vec{u} \,\geq\, 0}\; \mathcal{L}(\vec{u})
@@ -249,8 +249,7 @@ anche se non necessariamente differenziabile in ogni punto. I passaggi sono gli 
 Osserviamo che, ad ogni iterazione, il valore
 \begin{equation}
     \alpha_k = \vec{c}^{\tr}\vec{x}_k +
-    \vec{u}^{\tr}(\vec{b}-\vec{A}\vec{x}_k) = \mathcal{L}(\vec{u}_k), \quad \vec{x}_k = \displaystyle\argmin_{\vec{x} \,\in\,[0, 1]^n}
-    \mathcal{L}(\vec{u}_k),
+    \vec{u}^{\tr}(\vec{b}-\vec{A}\vec{x}_k) = \mathcal{L}(\vec{u}_k),
 \end{equation}
 fornisce una limitazione inferiore al valore ottimo e il valore
 \begin{equation}

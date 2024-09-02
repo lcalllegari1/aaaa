@@ -1,6 +1,6 @@
 \chapter{Implementazione}
-L'obiettivo di questo capitolo è sviluppare l'implementazione di un algoritmo risolutivo per il rilassamento lineare del
-set-covering, basato sul metodo di Frank-Wolfe.
+L'obiettivo di questo capitolo è quello di sviluppare l'implementazione di un algoritmo risolutivo per il rilassamento
+lineare del set-covering, basato sul metodo di Frank-Wolfe.
 
 \section{Generazione delle istanze}
 Come anticipato in \ref{sec:refmat}, la formulazione \eqref{eq:scplr} ci permette di identificare un'istanza per il
@@ -113,7 +113,7 @@ Mettendo insieme tutti i pezzi, otteniamo la funzione riportata di seguito.
 def build_model(A, m, n):
     model = Model("set-covering linear relaxation")
     x = [model.addVar(name=f"x_{j + 1}", vtype="C", lb=0) for j in range(n)]
-    model.setObjective(quicksum(x[j] for j in range(n)))
+    model.setObjective(quicksum(x[j] for j in range(n)), sense="minimize")
     for i in range(m):
         model.addCons(quicksum(A[i][j] * x[j] for j in range(n)) >= 1)
     return model
