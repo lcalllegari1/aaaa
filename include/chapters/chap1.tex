@@ -28,7 +28,7 @@ metodo di Frank-Wolfe [2] e l'idea è quella di operare un confronto con l'algor
 esecuzione e alla qualità delle soluzioni trovate.
 
 \section{Problemi di ottimizzazione}\label{sec:opt_prob}
-Un problema di ottimizzazione \( \mathcal{P} \) può essere definito con la formulazione generale
+Un problema di ottimizzazione può essere definito con la formulazione generale
 \begin{equation}\label{eq:opt_prob}
     \mathcal{P}\colon\left\{
     \begin{array}{ll}
@@ -37,7 +37,7 @@ Un problema di ottimizzazione \( \mathcal{P} \) può essere definito con la form
                                & \vec{x} \in \mathcal{D}
     \end{array}\right.
 \end{equation}
-dove \( f\colon \mathcal{D} \to \mathbb{R}\), con \( \vec{x} = [x_1, \ldots, x_n]^{\tr} \in \mathcal{D} = \mathcal{D}_1
+dove \( f\colon \mathcal{D} \to \mathbb{R}\), con \( \vec{x} = [x_1 ,\ldots,x_n]^{\tr} \in \mathcal{D} = \mathcal{D}_1
 \times \dots \times \mathcal{D}_n \) tale che \( x_j \in \mathcal{D}_j \) per ogni \( 1 \leq j \leq n \) e \(
 \mathcal{S} \) è un insieme finito di vincoli. Formalmente un vincolo è una funzione che coinvolge un sottoinsieme delle
 variabili del problema e che può assumere i valori vero o falso, corrispondenti alle condizioni di vincolo soddisfatto o
@@ -193,9 +193,9 @@ Di conseguenza, in queste situazioni è molto più utile utilizzare algoritmi eu
 fornire una soluzione accettabile in tempi ragionevoli.
 
 \section{Programmazione Lineare}
-La programmazione lineare costituisce uno dei paradigmi fondamentali nell'ambito dell'ottimizzazione, poichè si applica
+La programmazione lineare costituisce uno dei paradigmi fondamentali nell'ambito dell'ottimizzazione poichè si applica
 in modo naturale a molti problemi del mondo reale, che risultano quindi facili da modellare. Nel corso del tempo sono
-stati sviluppati molteplici algoritmi, con l'obiettivo di risolvere in maniera efficiente problemi di programmazione
+stati sviluppati molteplici algoritmi con l'obiettivo di risolvere in maniera efficiente problemi di programmazione
 lineare che coinvolgono un numero elevato di variabili e vincoli.
 
 Un problema di programmazione lineare (\textit{Linear Program}, LP), è un problema di ottimizzazione in cui la funzione
@@ -341,7 +341,7 @@ deve comunque valere, per evitare che il problema possa risultare illimitato.
 \subsection{Algoritmo del simplesso}
 L'algoritmo del simplesso è uno degli algoritmi maggiormente impiegati nell'ambito dell'ottimizzazione per risolvere
 problemi di programmazione lineare. \`E un algoritmo iterativo che cerca di sfruttare il teorema fondamentale della
-programmazione lineare in modo intelligente, con l'obiettivo ridurre il numero dei vertici da ispezionare per trovare la
+programmazione lineare in modo intelligente, con l'obiettivo di ridurre il numero dei vertici da ispezionare per trovare la
 soluzione ottima. L'idea è quella di partire da un vertice arbitrario del poliedro che definisce la regione ammissibile
 e di muoversi ad ogni iterazione in un vertice adiacente non peggiore, relativamente al valore della funzione obiettivo.
 
@@ -402,7 +402,7 @@ possibile. In effetti, questo significa risolvere il problema di programmazione 
              & \vec{u} \ge 0
     \end{array}\right. \\[7pt]
 \end{equation}
-nelle variabili \( \vec{u} = [u_1 \ldots u_m]^{\tr} \in \mathbb{R}^m \), con \( \mathcal{D} \) che prende il nome di
+nelle variabili \( \vec{u} = [u_1 ,\ldots,u_m]^{\tr} \in \mathbb{R}^m \), con \( \mathcal{D} \) che prende il nome di
 problema duale di \( \mathcal{P} \).
 Con qualche modifica, il ragionamento si applica identicamente a problemi espressi nella forma standard e, in maniera del
 tutto simmetrica, può essere applicato a problemi di massimo.
@@ -597,7 +597,7 @@ L'algoritmo di Frank-Wolfe si sviluppa come segue.
     \item \text{\alt Inizializzazione}: sia \( k \gets 0 \) e \( \vec{x}_0 \in \mathcal{D} \) un punto arbitrario che
         utilizzeremo come punto di partenza.
 
-    \item \text{\alt Passo 1}: trovare \( \vec{d} \in \mathcal{D} \) che massimizza l'approssimazione lineare di \( f
+    \item \text{\alt Passo 1}: trovare \( \vec{d}_k \in \mathcal{D} \) che massimizza l'approssimazione lineare di \( f
         \) in \( \vec{x}_k \), definita dal subgradiente \( \vec{s}_k \). Formalmente,
         dobbiamo calcolare
         \[

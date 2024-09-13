@@ -181,7 +181,7 @@ obiettivo. A questo punto, possiamo definire il problema duale Lagrangiano
     \max_{\vec{u} \,\geq\, 0}\; \mathcal{L}(\vec{u})
 \end{equation}
 con l'obiettivo di trovare la limitazione inferiore migliore, cioè quella più alta possibile. Inoltre, si può dimostrare
-che il problema duale lagrangiano è un problema di ottimizzazione convessa, poiché la regione ammissibile è un insieme
+che il problema duale Lagrangiano è un problema di ottimizzazione convessa, poiché la regione ammissibile è un insieme
 convesso e la funzione obiettivo è concava, anche se non necessariamente differenziabile in tutti i punti in cui è
 definita.
 
@@ -239,7 +239,7 @@ anche se non necessariamente differenziabile in ogni punto. I passaggi sono gli 
         \{\vec{c}^{\tr}\vec{x} + \vec{u}_k^{\tr}(\vec{b}-\vec{A}\vec{x})\}$ \hfill {\alt {\ttfamily /*} Soluzione di \(
         \mathcal{L}(\vec{u}_k) \) {\ttfamily */}}\\
         $\vec{s}_k = \vec{b} - \vec{A}\vec{x}_k$ \hfill {\alt {\ttfamily /*} Subgradiente in \( \vec{u}_k \) {\ttfamily */}}\\[8pt]
-        $\displaystyle \vec{d}_k = \argmax_{\vec{d} \,\in\, [0,1]^m} \{\vec{s}_k \,\vec{d}\}$ \hfill {\alt
+        $\displaystyle \vec{d}_k = \argmax_{\vec{d} \,\in\, [0,1]^m} \{\vec{s}_k^{\tr} \,\vec{d}\}$ \hfill {\alt
         {\ttfamily /*}  Passo 1 {\ttfamily */}}\\
         $\vec{u}_{k+1} = (1 - \gamma)\vec{u}_k + \gamma \vec{d}_k$ con $\gamma = \frac{2}{k+2}$ \hfill {\alt {\ttfamily
     /*}  Passo 2 {\ttfamily */}}}
@@ -253,7 +253,7 @@ Osserviamo che, ad ogni iterazione, il valore
 \end{equation}
 fornisce una limitazione inferiore al valore ottimo e il valore
 \begin{equation}
-   \omega_k = \mathcal{L}(\vec{u}_k) + \vec{s}_k(\vec{d}_k - \vec{u}_k)
+    \omega_k = \mathcal{L}(\vec{u}_k) + \vec{s}_k^{\tr}(\vec{d}_k - \vec{u}_k)
 \end{equation}
 rappresenta un limite superiore al valore ottimo. Non c'è nessuna garanzia che le due limitazioni migliorino
 monotonicamente ad ogni iterazione, ma è sufficiente tenere traccia delle limitazioni migliori, \( \alpha^{\star} \) e

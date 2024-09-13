@@ -382,15 +382,15 @@ funzione obiettivo \( \mathcal{L}(\vec{u}) \) del duale Lagrangiano di \( \mathc
 Sia \( f\colon \mathcal{D}\subset\mathbb{R}^n \to \mathbb{R} \) una generica funzione, che assumiamo differenziabile nei
 punti interni di \( \mathcal{D} \). Allora rimane definita l'approssimazione lineare del primo ordine
 \begin{equation}
-    f(\vec{x}) \simeq f(\vec{\hat{x}}) + \nabla f(\vec{\hat{x}})(\vec{x} - \vec{\hat{x}})
+    f(\vec{x}) \simeq f(\vec{\hat{x}}) + \nabla f(\vec{\hat{x}})^{\tr}(\vec{x} - \vec{\hat{x}})
 \end{equation}
 nelle vicinanze di un punto \( \vec{\hat{x}} \). Nel caso di una funzione concava, tale approssimazione limita \( f \)
 dall'alto. Di conseguenza, per il nostro problema duale Lagrangiano, il calcolo del subgradiente ci permette di
 generalizzare questo concetto e ottenere l'approssimazione lineare \( \mathcal{L}(\vec{u}) \simeq \mathcal{L}(\vec{\vec{\hat{u}}}) +
-\vec{s}_{\vec{\hat{u}}}(\vec{u} - \vec{\hat{u}})\) intorno a \( \vec{\hat{u}} \), che assume il suo valore massimo in
+\vec{s}_{\vec{\hat{u}}}^{\tr}(\vec{u} - \vec{\hat{u}})\) intorno a \( \vec{\hat{u}} \), che assume il suo valore massimo in
 \begin{equation}
 \vec{d^{\,\star}} = \argmax_{\vec{d}
-\,\in\, [0, 1]^m } \{\vec{s}_{\vec{\hat{u}}}\, \vec{d}\},
+\,\in\, [0, 1]^m } \{\vec{s}_{\vec{\hat{u}}}^{\tr}\, \vec{d}\},
 \end{equation}
 con
 \(
@@ -401,7 +401,7 @@ che può essere calcolato ponendo \( d^{\,\star}_i = 1 \) se e solo se \( \vec{s
 
 \begin{code}{adjusted title = {\cicon\ solver.c}}
 \begin{lstlisting}[language=c, style = style, caption={Calcolo di \( \vec{d}_k = \argmax_{\vec{d} \,\in\, [0, 1]^m}
-\,\{\vec{s}_k\,\vec{d}\}\).}]
+\,\{\vec{s}_k^{\tr}\,\vec{d}\}\).}]
 void argmax(const int * const s, uint8_t * const d) {
     for (int i = 0; i < m; i++) {
         d[i] = (s[i] > 0);
@@ -451,7 +451,7 @@ void update_lower_bound(double * const lower_bound, double candidate) {
 \subsubsection{Limitazione Superiore \textit{(Upper Bound)}}
 Dalle considerazioni fatte in \ref{sec:fwapplication} si è concluso che il valore
 \(
-    \mathcal{L}(\vec{u}_k) + \vec{s}_k(\vec{d}_k - \vec{u}_k)
+\mathcal{L}(\vec{u}_k) + \vec{s}_k^{\tr}(\vec{d}_k - \vec{u}_k)
 \)
 costituisce una limitazione superiore al valore della funzione obiettivo. Il codice della funzione che aggiorna la
 limitazione superiore segue immediatamente ed è riportato di seguito.
@@ -474,7 +474,7 @@ void update_upper_bound(double * const upper_bound, double objective,
 \end{code}
 
 \subsection{Composizione dell'algoritmo risolutivo}
-Finalmente possiamo mettere insieme tutti i pezzi e comporre l'algoritmo risolutivo, che viene riportato nel frammento
+Finalmente possiamo mettere insieme tutti i pezzi e comporre l'algoritmo risolutivo [9], che viene riportato nel frammento
 di codice che segue.
 
 \begin{code}{adjusted title = {\cicon\ solver.c}}

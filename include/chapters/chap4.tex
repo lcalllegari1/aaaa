@@ -104,7 +104,7 @@ inferiori, che rimangono invece molto più stabili.
 \subsection{Forma della matrice di riferimento}
 Procediamo ora a considerare istanze caratterizzate da matrici di riferimento di forme differenti, con l'obiettivo di
 capire come la forma della matrice influenza la qualità delle limitazioni prodotte dall'algoritmo di Frank-Wolfe. In
-particolare, faremo riferimento istanze caratterizzate da matrici di riferimento in cui il numero delle righe e delle
+particolare, faremo riferimento a istanze caratterizzate da matrici di riferimento in cui il numero delle righe e delle
 colonne è sbilanciato da un parte oppure dall'altra, come accade nella maggior parte delle istanze relative a problemi
 di set-covering.
 
@@ -264,7 +264,7 @@ questa ipotesi, abbiamo utilizzato delle ulteriori istanze. I risultati sono ria
     \centering
     \includegraphics[width=\textwidth]{assets/figures/shape_more_vars.pdf}
     \caption{Qualità delle limitazioni prodotte dall’algoritmo di Frank-Wolfe al variare della sparsità e della forma
-    della matrice di riferimento di istanze grandi.}
+    della matrice di riferimento.}
     \label{fig:shape3}
 \end{figure}
 
@@ -375,7 +375,7 @@ anche migliori di quelle che si ottengono con la matrice bilanciata  \( 1000\tim
 Infine, se confrontiamo i risultati ottenuti con matrici caratterizzate dallo stesso numero di elementi ma con forme
 simmetriche, osserviamo che le limitazioni inferiori migliori si ottengono per le matrici in cui il numero delle
 variabili è dominante rispetto al numero dei vincoli, come accade ad esempio per le matrici \( 100\times 1000 \) e  \(
-1000\times 1000 \) oppure \( 500\times 1000 \) e  \( 1000\times 500 \).
+1000\times 100 \) oppure \( 500\times 1000 \) e  \( 1000\times 500 \).
 
 Per le limitazioni superiori la situazione è diversa e l'andamento sembra dipendere molto dalla sparsità della
 matrice di riferimento. Per valori di sparsità abbastanza contenuti, le matrici \( 500\times 1000 \) producono
@@ -530,7 +530,7 @@ nella Figura \ref{fig:timeshape2} e riportati nella Tabella \ref{table:hugetable
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=\textwidth]{assets/figures/timeshape.pdf}
-    \caption{tempo di esecuzione dell'algoritmo del simplesso e dell'algoritmo di Frank-Wolfe per istanze di taglia
+    \caption{Tempo di esecuzione dell'algoritmo del simplesso e dell'algoritmo di Frank-Wolfe per istanze di taglia
     piccola e media, al variare della sparsità e della forma della matrice di riferimento.}
     \label{fig:timeshape}
 \end{figure}
@@ -548,7 +548,7 @@ bassi.
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=\textwidth]{assets/figures/timeshape2.pdf}
-    \caption{tempo di esecuzione dell'algoritmo del simplesso e dell'algoritmo di Frank-Wolfe per istanze di taglia
+    \caption{Tempo di esecuzione dell'algoritmo del simplesso e dell'algoritmo di Frank-Wolfe per istanze di taglia
     grande, al variare della sparsità e della forma della matrice di riferimento.}
     \label{fig:timeshape2}
 \end{figure}
@@ -569,7 +569,7 @@ grafici della Figura \ref{fig:timeshapelast} e riportati nella Tabella \ref{tabl
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=\textwidth]{assets/figures/symmetricshape.pdf}
-    \caption{tempo di esecuzione dell'algoritmo del simplesso e dell'algoritmo di Frank-Wolfe per istanze di taglia
+    \caption{Tempo di esecuzione dell'algoritmo del simplesso e dell'algoritmo di Frank-Wolfe per istanze di taglia
     grande, al variare della sparsità e della forma della matrice di riferimento.}
     \label{fig:timeshapelast}
 \end{figure}
@@ -621,7 +621,7 @@ Superiore}} & \multicolumn{3}{c}{\text{\alt Tempo Frank-Wolfe (ms)}}\\
         & 0.990 & 0.9168 & 0.9208 & 0.9213 & 1.0490 & 1.0490 & 1.0490 & 0.2201 & 1.8997 & 17.8531 & 1.1396 \\
         \bottomrule
     \end{tabularx}
-    \caption{qualità delle limitazioni (valori normalizzati rispetto all'ottimo ottenuto con l'algoritmo del simplesso)
+    \caption{Qualità delle limitazioni (valori normalizzati rispetto all'ottimo ottenuto con l'algoritmo del simplesso)
     di Frank-Wolfe e tempo di esecuzione impiegato per ottenerle, al variare del numero di iterazioni e della forma
     della matrice di riferimento.}
     \label{table:hugetable2}
@@ -672,7 +672,7 @@ Superiore}} & \multicolumn{3}{c}{\text{\alt Tempo Frank-Wolfe (ms)}}\\
         & 0.999 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 2.0833 & 19.2386 & 168.014 & 7.510 \\
         \bottomrule
     \end{tabularx}
-    \caption{qualità delle limitazioni (valori normalizzati rispetto all'ottimo ottenuto con l'algoritmo del simplesso)
+    \caption{Qualità delle limitazioni (valori normalizzati rispetto all'ottimo ottenuto con l'algoritmo del simplesso)
     di Frank-Wolfe e tempo di esecuzione impiegato per ottenerle, al variare del numero di iterazioni e della forma
     della matrice di riferimento.}
     \label{table:hugetable3}
@@ -723,7 +723,7 @@ Superiore}} & \multicolumn{3}{c}{\text{\alt Tempo Frank-Wolfe (ms)}}\\
         & 0.995 & 0.9256 & 0.9388 & 0.9402 & 1.7528 & 1.6508 & 1.6046 & 1.2493 & 9.2556 & 95.7591 & 490.6100 \\
         \bottomrule
     \end{tabularx}
-    \caption{qualità delle limitazioni (valori normalizzati rispetto all'ottimo ottenuto con l'algoritmo del simplesso)
+    \caption{Qualità delle limitazioni (valori normalizzati rispetto all'ottimo ottenuto con l'algoritmo del simplesso)
     di Frank-Wolfe e tempo di esecuzione impiegato per ottenerle, al variare del numero di iterazioni e della forma
     della matrice di riferimento.}
     \label{table:hugetable4}
